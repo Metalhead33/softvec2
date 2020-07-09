@@ -23,8 +23,7 @@ enum class TexRes : uint8_t {
 	T_2048_X_2048=11,
 	T_4096_X_4096=12,
 	T_8192_X_8192=13,
-	T_16384_X_16384=15,
-	T_32768_X_32768=16
+	T_16384_X_16384=15
 };
 
 template <TexRes po2> struct OptimizedTextureDimensions {

@@ -14,7 +14,6 @@ SOURCES += \
 
 HEADERS += \
 	NormDenorm.hpp \
-	PixelRGBA.h \
 	Raster/ClipspaceRenderer.hpp \
 	Raster/Pipeline.hpp \
 	Raster/SortTriangle.hpp \
@@ -27,3 +26,7 @@ HEADERS += \
 	mat.hpp \
 	vec.hpp \
 	vecdefs.hpp
+
+DISTFILES += \
+	.gitignore \
+	README.md
