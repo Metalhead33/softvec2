@@ -11,5 +11,6 @@ SOURCES += \
 
 HEADERS += \
 	MhNormDenorm.hpp \
+	RenderingPipeline.hpp \
 	Texture.hpp \
 	TriangleSort.hpp
