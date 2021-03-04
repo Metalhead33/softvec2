@@ -8,13 +8,13 @@
 using namespace std;
 
 static const int W = 640, H = 480;
+static const glm::ivec2 viewport(W,H);
 
 typedef TextureABGR<uint8_t> Framebuffer;
 Framebuffer framebuffer(W,H);
 
 struct Uniform {
 	Framebuffer* framebuffer;
-	glm::vec2 viewport;
 };
 struct BasicVertexIn {
 	glm::vec3 COORDS;
@@ -51,8 +51,8 @@ struct BasicVertexOut {
 */
 BasicVertexOut vertexShader(const Uniform& uniform, const BasicVertexIn& input) {
 	return { glm::vec2(
-					(input.COORDS[0] + 1.0f) / 2.0f * uniform.viewport.x,
-					((input.COORDS[1]-1.0f) / -2.0f) * uniform.viewport.y
+					(input.COORDS[0] + 1.0f) / 2.0f * uniform.framebuffer->getW(),
+					((input.COORDS[1]-1.0f) / -2.0f) * uniform.framebuffer->getH()
 					), input.COLOUR };
 }
 void fragmentShader(const Uniform& uniform, const BasicVertexOut& v0,const BasicVertexOut& v1,const BasicVertexOut& v2,
@@ -72,7 +72,7 @@ int main()
 {
 	BasicVertexIn vertices[] = {
 		{ glm::vec3(0.0f,1.0f,0.0f), glm::vec4(1.0f, 0.0f, 0.0f, 1.0f) }, // RED
-		{ glm::vec3(-1.0f,-1.0f,0.0f), glm::vec4(0.0f, 1.0f, 0.0f, 1.0f) }, // GREEN
+		{ glm::vec3(-2.0f,-1.0f,0.0f), glm::vec4(0.0f, 1.0f, 0.0f, 1.0f) }, // GREEN
 		{ glm::vec3(1.0f,-1.0f,0.0f), glm::vec4(0.0f, 0.0f, 1.0f, 1.0f) } // BLUE
 	};
 	SDL_Init(SDL_INIT_VIDEO);
@@ -81,7 +81,7 @@ int main()
 	SDL_Renderer* renderer = SDL_CreateRenderer(window, -1, 0);
 	SDL_Texture* texture = SDL_CreateTexture(renderer,
 			SDL_PIXELFORMAT_RGBX8888, SDL_TEXTUREACCESS_STREAMING, W,H);
-	Uniform uniform = { &framebuffer, glm::vec2(float(W),float(H)) };
+	Uniform uniform = { &framebuffer };
 	bool isInterrupted=false;
 	do {
 		SDL_Event ev;
@@ -93,7 +93,7 @@ int main()
 		}
 		framebuffer.clear();
 		// Draw a triangle
-		Pipeline<BasicVertexIn,BasicVertexOut,Uniform>::renderTriangles(vertexShader,fragmentShader,uniform,vertices,3);
+		Pipeline<BasicVertexIn,BasicVertexOut,Uniform>::renderTriangles(vertexShader,fragmentShader,viewport,uniform,vertices,3);
 
 		SDL_UpdateTexture(texture, nullptr, framebuffer.getPixels(), 4*W);
 		SDL_RenderCopy(renderer, texture, nullptr, nullptr);
