@@ -3,14 +3,18 @@ CONFIG += console c++2a
 CONFIG -= app_bundle
 CONFIG -= qt
 
-LIBS += -lSDL2
+LIBS += -lSDL2 -lMhLib
 
 SOURCES += \
-        TriangleSort.cpp \
+        Pipeline/BasicPipeline.cpp \
+        Pipeline/TriangleSort.cpp \
+        Texture.cpp \
         main.cpp
 
 HEADERS += \
 	MhNormDenorm.hpp \
-	RenderingPipeline.hpp \
-	Texture.hpp \
-	TriangleSort.hpp
+	Pipeline/BasicPipeline.hpp \
+	Pipeline/RenderingPipeline.hpp \
+	Pipeline/TriangleSort.hpp \
+	StandardTexture.hpp \
+	Texture.hpp
