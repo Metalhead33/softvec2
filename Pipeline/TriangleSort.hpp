@@ -5,6 +5,7 @@
 namespace Fixed {
 int edgeFunction(const glm::ivec2 &a, const glm::ivec2 &b, const glm::ivec2 &c);
 float edgeFunction(const glm::vec2 &a, const glm::vec2 &b, const glm::vec2 &c);
+float edgeFunction(const glm::vec3 &a, const glm::vec3 &b, const glm::vec3 &c);
 bool isPrecedingClockwise(const glm::ivec2& a, const glm::ivec2& b); // Is A above B?
 bool isPrecedingClockwise(const glm::vec2& a, const glm::vec2& b); // Is A above B?
 bool isPrecedingClockwise(const glm::vec3& a, const glm::vec3& b); // Is A above B?

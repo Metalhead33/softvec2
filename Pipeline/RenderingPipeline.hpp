@@ -32,8 +32,8 @@ template <typename VertexInput,
 		const int minX = std::clamp(int(std::trunc(v2.COORDS.y)),0,viewport.y);
 		for(int i = minY; i < minX;++i) {
 			const float dy = float(i) - v0.COORDS.y;
-			const float curx1 = v0.COORDS.x + invslope1 * dy + 0.5f;
-			const float curx2 = v0.COORDS.x + invslope2 * dy + 0.5f;
+			const float curx1 = v0.COORDS.x + invslope1 * dy;
+			const float curx2 = v0.COORDS.x + invslope2 * dy;
 			resolveScanline(uniform,viewport,i,int(std::trunc(curx1)),int(std::trunc(curx2)),rArea,v0,v1,v2);
 		}
 	}
@@ -44,8 +44,8 @@ template <typename VertexInput,
 		const int minX = std::clamp(int(std::trunc(v2.COORDS.y)),0,viewport.y);
 		for(int i = minY; i < minX;++i) {
 			const float dy = float(i) - v2.COORDS.y;
-			const float curx1 = v2.COORDS.x + invslope1 * dy + 0.5f;
-			const float curx2 = v2.COORDS.x + invslope2 * dy + 0.5f;
+			const float curx1 = v2.COORDS.x + invslope1 * dy;
+			const float curx2 = v2.COORDS.x + invslope2 * dy;
 			resolveScanline(uniform,viewport,i,int(std::trunc(curx1)),int(std::trunc(curx2)),rArea,v0,v1,v2);
 		}
 	}

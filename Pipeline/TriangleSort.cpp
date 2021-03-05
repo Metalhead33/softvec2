@@ -39,7 +39,12 @@ glm::vec2 clipspaceToScreenspace(const glm::vec2 &viewport, const glm::vec2 &cli
 {
 	return glm::vec2{ (clipspace[0] + 1.0f) / 2.0f * viewport[0],
 			((clipspace[1]-1.0f) / -2.0f) * viewport[1],
-		};
+	};
+}
+
+float edgeFunction(const glm::vec3 &a, const glm::vec3 &b, const glm::vec3 &c)
+{
+	return ((c.x - a.x) * (b.y - a.y) - (c.y - a.y) * (b.x - a.x));
 }
 
 }
