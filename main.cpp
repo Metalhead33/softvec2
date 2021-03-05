@@ -38,7 +38,7 @@ int main()
 		}
 		framebuffer.clear();
 		// Draw a triangle
-		BasicPipeline::renderTriangles(basicVertexShader,basicFragmentShader,viewport,uniform,vertices,3);
+		BasicPipeline::renderTriangles(viewport,uniform,vertices,3);
 
 		SDL_UpdateTexture(texture, nullptr, framebuffer.getPixels(), 4*W);
 		SDL_RenderCopy(renderer, texture, nullptr, nullptr);
