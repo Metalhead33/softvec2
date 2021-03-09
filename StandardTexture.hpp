@@ -55,11 +55,11 @@ public:
 	unsigned getSizeInBytes() const { return pixels.size() * sizeof(Precision); }
 	unsigned getStride() const { return w*sizeof(Precision); }
 	void setPixel(const glm::ivec2& pos, const glm::vec4& col) {
-		Precision& pixel = pixels[(w*pos.y)+pos.x];
+		Precision& pixel = pixels[(w*(pos.y%h))+(pos.x%w)];
 		pixel = fdenormalize<Precision>(col.r);
 	}
 	void getPixel(const glm::ivec2& pos, glm::vec4& col) const {
-		const float pixel = fnormalize(pixels[(w*pos.y)+pos.x]);
+		const float pixel = fnormalize(pixels[(w*(pos.y%h))+(pos.x%w)]);
 		col.r = pixel;
 		col.g = pixel;
 		col.b = pixel;
@@ -120,13 +120,13 @@ public:
 	unsigned getSizeInBytes() const { return pixels.size() * sizeof(PixelRGB); }
 	unsigned getStride() const { return w*sizeof(PixelRGB); }
 	void setPixel(const glm::ivec2& pos, const glm::vec4& col) {
-		PixelRGB& pixel = pixels[(w*pos.y)+pos.x];
+		PixelRGB& pixel = pixels[(w*(pos.y%h))+(pos.x%w)];
 		pixel.r = fdenormalize<Precision>(col.r);
 		pixel.g = fdenormalize<Precision>(col.g);
 		pixel.b = fdenormalize<Precision>(col.b);
 	}
 	void getPixel(const glm::ivec2& pos, glm::vec4& col) const {
-		const PixelRGB& pixel = pixels[(w*pos.y)+pos.x];
+		const PixelRGB& pixel = pixels[(w*(pos.y%h))+(pos.x%w)];
 		col.r = fnormalize(pixel.r);
 		col.g = fnormalize(pixel.g);
 		col.b = fnormalize(pixel.b);
@@ -186,14 +186,14 @@ public:
 	unsigned getSizeInBytes() const { return pixels.size() * sizeof(PixelRGBA); }
 	unsigned getStride() const { return w*sizeof(PixelRGBA); }
 	void setPixel(const glm::ivec2& pos, const glm::vec4& col) {
-		PixelRGBA& pixel = pixels[(w*pos.y)+pos.x];
+		PixelRGBA& pixel = pixels[(w*(pos.y%h))+(pos.x%w)];
 		pixel.r = fdenormalize<Precision>(col.r);
 		pixel.g = fdenormalize<Precision>(col.g);
 		pixel.b = fdenormalize<Precision>(col.b);
 		pixel.a = fdenormalize<Precision>(col.a);
 	}
 	void getPixel(const glm::ivec2& pos, glm::vec4& col) const {
-		const PixelRGBA& pixel = pixels[(w*pos.y)+pos.x];
+		const PixelRGBA& pixel = pixels[(w*(pos.y%h))+(pos.x%w)];
 		col.r = fnormalize(pixel.r);
 		col.g = fnormalize(pixel.g);
 		col.b = fnormalize(pixel.b);
@@ -253,13 +253,13 @@ public:
 	unsigned getSizeInBytes() const { return pixels.size() * sizeof(PixelBGR); }
 	unsigned getStride() const { return w*sizeof(PixelBGR); }
 	void setPixel(const glm::ivec2& pos, const glm::vec4& col) {
-		PixelBGR& pixel = pixels[(w*pos.y)+pos.x];
+		PixelBGR& pixel = pixels[(w*(pos.y%h))+(pos.x%w)];
 		pixel.b = fdenormalize<Precision>(col.b);
 		pixel.g = fdenormalize<Precision>(col.g);
 		pixel.r = fdenormalize<Precision>(col.r);
 	}
 	void getPixel(const glm::ivec2& pos, glm::vec4& col) const {
-		const PixelBGR& pixel = pixels[(w*pos.y)+pos.x];
+		const PixelBGR& pixel = pixels[(w*(pos.y%h))+(pos.x%w)];
 		col.b = fnormalize(pixel.b);
 		col.g = fnormalize(pixel.g);
 		col.r = fnormalize(pixel.r);
@@ -319,14 +319,14 @@ public:
 	unsigned getSizeInBytes() const { return pixels.size() * sizeof(PixelBGRA); }
 	unsigned getStride() const { return w*sizeof(PixelBGRA); }
 	void setPixel(const glm::ivec2& pos, const glm::vec4& col) {
-		PixelBGRA& pixel = pixels[(w*pos.y)+pos.x];
+		PixelBGRA& pixel = pixels[(w*(pos.y%h))+(pos.x%w)];
 		pixel.r = fdenormalize<Precision>(col.r);
 		pixel.g = fdenormalize<Precision>(col.g);
 		pixel.b = fdenormalize<Precision>(col.b);
 		pixel.a = fdenormalize<Precision>(col.a);
 	}
 	void getPixel(const glm::ivec2& pos, glm::vec4& col) const {
-		const PixelBGRA& pixel = pixels[(w*pos.y)+pos.x];
+		const PixelBGRA& pixel = pixels[(w*(pos.y%h))+(pos.x%w)];
 		col.b = fnormalize(pixel.b);
 		col.g = fnormalize(pixel.g);
 		col.r = fnormalize(pixel.r);
@@ -386,14 +386,14 @@ public:
 	unsigned getSizeInBytes() const { return pixels.size() * sizeof(PixelARGB); }
 	unsigned getStride() const { return w*sizeof(PixelARGB); }
 	void setPixel(const glm::ivec2& pos, const glm::vec4& col) {
-		PixelARGB& pixel = pixels[(w*pos.y)+pos.x];
+		PixelARGB& pixel = pixels[(w*(pos.y%h))+(pos.x%w)];
 		pixel.a = fdenormalize<Precision>(col.a);
 		pixel.r = fdenormalize<Precision>(col.r);
 		pixel.g = fdenormalize<Precision>(col.g);
 		pixel.b = fdenormalize<Precision>(col.b);
 	}
 	void getPixel(const glm::ivec2& pos, glm::vec4& col) const {
-		const PixelARGB& pixel = pixels[(w*pos.y)+pos.x];
+		const PixelARGB& pixel = pixels[(w*(pos.y%h))+(pos.x%w)];
 		col.a = fnormalize(pixel.a);
 		col.r = fnormalize(pixel.r);
 		col.g = fnormalize(pixel.g);
@@ -453,14 +453,14 @@ public:
 	unsigned getSizeInBytes() const { return pixels.size() * sizeof(PixelABGR); }
 	unsigned getStride() const { return w*sizeof(PixelABGR); }
 	void setPixel(const glm::ivec2& pos, const glm::vec4& col) {
-		PixelABGR& pixel = pixels[(w*pos.y)+pos.x];
+		PixelABGR& pixel = pixels[(w*(pos.y%h))+(pos.x%w)];
 		pixel.a = fdenormalize<Precision>(col.a);
 		pixel.r = fdenormalize<Precision>(col.r);
 		pixel.g = fdenormalize<Precision>(col.g);
 		pixel.b = fdenormalize<Precision>(col.b);
 	}
 	void getPixel(const glm::ivec2& pos, glm::vec4& col) const {
-		const PixelABGR& pixel = pixels[(w*pos.y)+pos.x];
+		const PixelABGR& pixel = pixels[(w*(pos.y%h))+(pos.x%w)];
 		col.a = fnormalize(pixel.a);
 		col.r = fnormalize(pixel.r);
 		col.g = fnormalize(pixel.g);

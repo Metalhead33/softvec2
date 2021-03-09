@@ -1,15 +1,6 @@
-#include "ClipspacePipeline.hpp"
+#include "Model2Pipeline.hpp"
 
-ClipspaceVertexOut clipspaceVertexShader(const ClipspaceUniform &uniform, const ClipspaceVertexIn &input)
-{
-	ClipspaceVertexOut out{glm::vec3( (input.COORDS[0] + 1.0f) / 2.0f * uniform.framebuffer->getW(),
-				((input.COORDS[1]-1.0f) / -2.0f) * uniform.framebuffer->getH(),
-				(input.COORDS[2] * -1.0f) ), input.TEXCOORD};
-	if(uniform.perspectiveCorrection) out.TEXCOORD /= out.COORDS.z;
-	return out;
-}
-
-void clipspaceFragmentShader(const ClipspaceUniform &uniform, const ClipspaceVertexOut &v0, const ClipspaceVertexOut &v1, const ClipspaceVertexOut &v2, float w0, float w1, float w2, const glm::ivec2 &screenCoord)
+void model2FragmentShader(const Model2Uniform &uniform, const Model2VertexOut &v0, const Model2VertexOut &v1, const Model2VertexOut &v2, float w0, float w1, float w2, const glm::ivec2 &screenCoord)
 {
 	if(screenCoord.x < 0 || screenCoord.y < 0) return;
 	const float z = 1.0f / (w0 * v0.COORDS.z + w1 * v1.COORDS.z + w2 * v2.COORDS.z);
@@ -35,4 +26,20 @@ void clipspaceFragmentShader(const ClipspaceUniform &uniform, const ClipspaceVer
 		break;
 	}
 	}
+}
+
+Model2VertexOut model2VertexShader(const Model2Uniform &uniform, const Model2VertexIn &input)
+{
+	glm::vec4 v4 = glm::vec4(input.COORDS,1.0f);
+	v4 = uniform.mvp * v4;
+	v4.x /= v4.w;
+	v4.y /= v4.w;
+	v4.z /= v4.w;
+	v4.x = ((v4.x + 1.0f) / 2.0f) * uniform.viewport.x;
+	v4.y = ((v4.y - 1.0f) / -2.0f) * uniform.viewport.y;
+	v4.z *= -1.0f;
+	Model2VertexOut out{ glm::vec3(v4.x,v4.y,v4.z) ,input.TEXCOORD };
+	out.COORDS.z *= -1.0f;
+	if(uniform.perspectiveCorrection) out.TEXCOORD /= out.COORDS.z;
+	return out;
 }

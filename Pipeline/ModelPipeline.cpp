@@ -1,15 +1,25 @@
-#include "ClipspacePipeline.hpp"
+#include "ModelPipeline.hpp"
+#include <glm/gtc/matrix_transform.hpp>
 
-ClipspaceVertexOut clipspaceVertexShader(const ClipspaceUniform &uniform, const ClipspaceVertexIn &input)
+ModelVertexOut modelVertexShader(const ModelUniform &uniform, const ModelVertexIn &input)
 {
-	ClipspaceVertexOut out{glm::vec3( (input.COORDS[0] + 1.0f) / 2.0f * uniform.framebuffer->getW(),
-				((input.COORDS[1]-1.0f) / -2.0f) * uniform.framebuffer->getH(),
-				(input.COORDS[2] * -1.0f) ), input.TEXCOORD};
+	//glm::vec4 tempVec = glm::vec4(input.COORDS,1.0f) * uniform.mvp;
+	/*tempVec.x /= tempVec.w;
+	tempVec.y /= tempVec.w;
+	tempVec.z /= tempVec.w;*/
+	/*ModelVertexOut out{glm::vec3( (tempVec.x + 1.0f) / 2.0f * uniform.framebuffer->getW(),
+				((tempVec.y-1.0f) / -2.0f) * uniform.framebuffer->getH(),
+				(tempVec.z * -1.0f) ), input.TEXCOORD};*/
+	/*ModelVertexOut out{glm::vec3( (tempVec.x / tempVec.w),
+				(tempVec.y / tempVec.w),
+				(tempVec.z / tempVec.w) ), input.TEXCOORD};*/
+	ModelVertexOut out{ glm::projectZO(input.COORDS,uniform.model,uniform.proj,uniform.viewport),input.TEXCOORD };
+	out.COORDS.z *= -1.0f;
 	if(uniform.perspectiveCorrection) out.TEXCOORD /= out.COORDS.z;
 	return out;
 }
 
-void clipspaceFragmentShader(const ClipspaceUniform &uniform, const ClipspaceVertexOut &v0, const ClipspaceVertexOut &v1, const ClipspaceVertexOut &v2, float w0, float w1, float w2, const glm::ivec2 &screenCoord)
+void modelFragmentShader(const ModelUniform &uniform, const ModelVertexOut &v0, const ModelVertexOut &v1, const ModelVertexOut &v2, float w0, float w1, float w2, const glm::ivec2 &screenCoord)
 {
 	if(screenCoord.x < 0 || screenCoord.y < 0) return;
 	const float z = 1.0f / (w0 * v0.COORDS.z + w1 * v1.COORDS.z + w2 * v2.COORDS.z);

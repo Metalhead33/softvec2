@@ -14,10 +14,9 @@ template <typename VertexInput,
 	//typedef std::function<void(const Uniform&, const VertexOutput&,const VertexOutput&,const VertexOutput&,float,float,float,const glm::ivec2&)> FragmentShader;
 	static void resolveScanline(const Uniform& uniform, const glm::ivec2& viewport, int scanline, int minX, int maxX, float rArea,
 								const VertexOutput& v0, const VertexOutput& v1, const VertexOutput& v2) {
-		minX = std::max(minX,0);
-		maxX = std::min(maxX,viewport.x);
-		glm::ivec2 p(minX,scanline);
-		for(; p.x < maxX; ++p.x) {
+		const int max_x = std::min(maxX,viewport.x);
+		for(int x = std::max(minX,0); x < max_x; ++x) {
+			glm::ivec2 p = glm::ivec2(x,scanline);
 			glm::vec2 pf = glm::vec2(float(p.x)+0.5f,float(p.y)+0.5f);
 			const float w0 = float(Fixed::edgeFunction(v1.COORDS, v2.COORDS, pf)) * rArea;
 			const float w1 = float(Fixed::edgeFunction(v2.COORDS, v0.COORDS, pf)) * rArea;
@@ -29,17 +28,17 @@ template <typename VertexInput,
 		const float invslope1 = float(v1.COORDS.x - v0.COORDS.x) / float(v1.COORDS.y - v0.COORDS.y);
 		const float invslope2 = float(v2.COORDS.x - v0.COORDS.x) / float(v2.COORDS.y - v0.COORDS.y);
 		const int minY = std::clamp(int(std::trunc(v0.COORDS.y)),0,viewport.y);
-		const int minX = std::clamp(int(std::trunc(v2.COORDS.y)),0,viewport.y);
+		const int minX = std::clamp(int(std::trunc(v1.COORDS.y)),0,viewport.y);
 		for(int i = minY; i < minX;++i) {
-			const float dy = float(i) - v0.COORDS.y;
-			const float curx1 = v0.COORDS.x + invslope1 * dy;
-			const float curx2 = v0.COORDS.x + invslope2 * dy;
+			const float dy = float(i) - v0.COORDS.y + 0.5f;
+			const float curx1 = v0.COORDS.x + invslope1 * dy +0.5f;
+			const float curx2 = v0.COORDS.x + invslope2 * dy + 0.5f;
 			resolveScanline(uniform,viewport,i,int(std::trunc(curx1)),int(std::trunc(curx2)),rArea,v0,v1,v2);
 		}
 	}
 	static void fillTopFlatTriangle(const Uniform& uniform, const glm::ivec2& viewport, float rArea, const VertexOutput& v0, const VertexOutput& v1, const VertexOutput& v2) {
-		const float invslope1 = (v2.COORDS.x - v0.COORDS.x) / (v2.COORDS.y - v0.COORDS.y);
-		const float invslope2 = (v2.COORDS.x - v1.COORDS.x) / (v2.COORDS.y - v1.COORDS.y);
+		const float invslope1 = float(v2.COORDS.x - v0.COORDS.x) / float(v2.COORDS.y - v0.COORDS.y);
+		const float invslope2 = float(v2.COORDS.x - v1.COORDS.x) / float(v2.COORDS.y - v1.COORDS.y);
 		const int minY = std::clamp(int(std::trunc(v0.COORDS.y)),0,viewport.y);
 		const int minX = std::clamp(int(std::trunc(v2.COORDS.y)),0,viewport.y);
 		for(int i = minY; i < minX;++i) {
@@ -50,7 +49,9 @@ template <typename VertexInput,
 		}
 	}
 	static void renderVertexOutput(const Uniform& uniform, const glm::ivec2& viewport, const VertexOutput& v0, const VertexOutput& v1, const VertexOutput& v2) {
-		const float rArea = 1.0f / Generic::edgeFunction(v0,v1,v2);
+		const float area = Generic::edgeFunction(v0,v1,v2);
+		//if(area <= 0.0f) return; // Degenerate triangle, don't render
+		const float rArea = 1.0f / area;
 		const VertexOutput *t = &v0;
 		const VertexOutput *m = &v1;
 		const VertexOutput *b = &v2;
@@ -86,7 +87,6 @@ template <typename VertexInput,
 
 			const VertexOutput *l = m, *r = &v4;
 			if (l->COORDS.x > r->COORDS.x) std::swap(l, r);
-
 			fillBottomFlatTriangle(uniform, viewport, rArea, *t, *l, *r);
 			fillTopFlatTriangle(uniform, viewport, rArea, *l, *r, *b);
 		  }

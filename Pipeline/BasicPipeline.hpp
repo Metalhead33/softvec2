@@ -15,8 +15,8 @@ struct BasicVertexOut {
 	glm::vec4 COLOUR;
 	inline static BasicVertexOut split(const BasicVertexOut& t, const BasicVertexOut& m, const BasicVertexOut& b, float dy, float iy) {
 		return { glm::vec2(
-						m.COORDS.y,
-						t.COORDS.x + ((b.COORDS.x - t.COORDS.x) / dy) * iy
+						t.COORDS.x + ((b.COORDS.x - t.COORDS.x) / dy) * iy,
+						m.COORDS.y
 						),
 					glm::vec4(
 						t.COLOUR.r + ((b.COLOUR.r - t.COLOUR.r) / dy) * iy,
