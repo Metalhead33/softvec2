@@ -26,8 +26,8 @@ void ZBuffer::clear()
 {
 	//memset(buff.data(),0,buff.size()*sizeof(float));
 	for(auto& it : buff) {
-		//it = std::numeric_limits<float>::infinity();
-		it = 1.0f;
+		it = std::numeric_limits<float>::infinity();
+		//it = 1.0f;
 	}
 }
 

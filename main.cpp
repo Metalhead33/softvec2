@@ -35,7 +35,7 @@ std::shared_ptr<Texture> tex = nullptr;
 
 void printMatrices(const glm::mat4& p, const glm::mat4& v, const glm::mat4& m);
 
-//#define ASSIMP_IMPORT
+#define ASSIMP_IMPORT
 
 #ifdef ASSIMP_IMPORT
 std::vector<ModelVertexIn> vertices;
@@ -50,12 +50,12 @@ std::vector<ModelVertexIn> vertices = {
 std::vector<unsigned> indices = { 0, 1, 2, 1, 2, 3 };
 #endif
 
-/*std::vector<BasicVertexIn> vertices2 = {
+std::vector<BasicVertexIn> vertices2 = {
 	{ glm::vec3(-0.90f,0.90f,0.0f), glm::vec4(1.0f, 0.0f, 0.0f, 1.0f ) }, // Upper left
 	{ glm::vec3(1.0f,1.0f,0.0f), glm::vec4(0.0f, 1.0f, 0.0f, 1.0f) }, // Upper right
 	{ glm::vec3(-1.0f,-1.0f,0.0f), glm::vec4(0.0f, 0.0f, 1.0f, 1.0f) }, // Lower left
 	{ glm::vec3(0.90f,-0.90f,0.0f), glm::vec4(1.0f, 1.0f, 1.0f, 1.0f) } // Lower right
-};*/
+};
 
 //std::vector<ModelVertexIn> vertices;
 // std::vector<unsigned> indices;
@@ -72,7 +72,7 @@ int main()
 	tex = textureFromPNG(pngText);
 	ModelUniform uniform = { &framebuffer, &zbuff, false, tex.get(), TextureFiltering::NEAREST_NEIGHBOUR, glm::mat4(1.0f), glm::mat4(1.0f), glm::vec4(0.0f, 0.0f, float(W),float(H)) };
 	//ClipspaceUniform uniform2 = { &framebuffer, &zbuff, false, tex.get(), TextureFiltering::NEAREST_NEIGHBOUR };
-	//BasicUniform uniform3 = { &framebuffer };
+	BasicUniform uniform3 = { &framebuffer };
 	Model2Uniform uniform4 = { &framebuffer, &zbuff, false, tex.get(), TextureFiltering::NEAREST_NEIGHBOUR, glm::mat4(1.0f), glm::vec2(float(W),float(H)) };
 	//glm::mat4 Perspective = glm::perspectiveFov(glm::radians(90.0f), float(W), float(H), 0.1f, 100.0f);
 	//glm::mat4 Perspective = glm::ortho(-10.0f,10.0f,-10.0f,10.0f,0.0f,100.0f);
@@ -154,11 +154,11 @@ int main()
 		uniform.proj = Perspective * View;
 		uniform4.mvp = Perspective * View * Model;
 		// Draw a triangle
-		ModelPipeline::renderTriangles(viewport,uniform,vertices.data(),indices.data(),indices.size() );
-		//Model2Pipeline::renderTriangles(viewport,uniform4,vertices.data(),indices.data(),indices.size() );
+		//ModelPipeline::renderTriangles(viewport,uniform,vertices.data(),indices.data(),indices.size() );
+		Model2Pipeline::renderTriangles(viewport,uniform4,vertices.data(),indices.data(),indices.size() );
 		//BasicPipeline::renderTriangles(viewport,uniform3,vertices2.data(),indices.data(),indices.size() );
-		//BasicPipeline::renderTriangle(viewport,uniform3,vertices2[0],vertices2[1],vertices2[2]);
-		//BasicPipeline::renderTriangle(viewport,uniform3,vertices2[1],vertices2[2],vertices2[3]);
+		//BasicPipeline::renderTriangle(viewport,uniform3,vertices2[2],vertices2[1],vertices2[0]);
+		//BasicPipeline::renderTriangle(viewport,uniform3,vertices2[3],vertices2[2],vertices2[1]);
 		//ClipspacePipeline::renderTriangles(viewport,uniform2,vertices.data(),indices.data(),indices.size() );
 
 		SDL_UpdateTexture(texture, nullptr, framebuffer.getPixels(), 4*W);
