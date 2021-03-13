@@ -28,6 +28,9 @@ public:
 	glm::vec4 sampleNearestNeighbour(const glm::vec2& uv) const;
 	glm::vec4 sampleDithered(const glm::vec2& uv, const glm::ivec2& screencoords) const;
 	glm::vec4 sampleBilinear(const glm::vec2& uv) const;
+
+	// Some other convenience functions
+	void clearToColour(const glm::vec4& col);
 };
 
 enum TextureFiltering {

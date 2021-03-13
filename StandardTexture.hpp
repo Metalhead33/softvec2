@@ -1,40 +1,33 @@
 #ifndef STANDARDTEXTURE_HPP
 #define STANDARDTEXTURE_HPP
 #include <glm/glm.hpp>
-#include "MhNormDenorm.hpp"
 #include "Texture.hpp"
+#include "StandardPixelType.hpp"
 #include <vector>
 #include <cstring>
 
-template <typename Precision> class TextureGreyscale : public Texture {
+template <typename PixelType> class StandardTexture : public Texture {
 private:
-	std::vector<Precision> pixels;
+	std::vector<PixelType> pixels;
 	unsigned w,h;
 public:
-	TextureGreyscale() : w(0), h(0) {
-
-	}
-	TextureGreyscale(unsigned w, unsigned h) : pixels(w*h), w(w), h(h)
-	{
-		memset(pixels.data(),0,pixels.size() * sizeof(Precision));
-	}
-	TextureGreyscale(const TextureGreyscale& cpy) : pixels(cpy.pixels), w(cpy.w), h(cpy.h)
+	StandardTexture(const StandardTexture& cpy) : pixels(cpy.pixels), w(cpy.w), h(cpy.h)
 	{
 
 	}
-	TextureGreyscale(TextureGreyscale&& mov) : pixels(std::move(mov.pixels)), w(mov.w), h(mov.h)
+	StandardTexture(StandardTexture&& mov) : pixels(std::move(mov.pixels)), w(mov.w), h(mov.h)
 	{
 		mov.w = 0;
 		mov.h = 0;
 	}
-	TextureGreyscale& operator=(const TextureGreyscale& cpy)
+	StandardTexture& operator=(const StandardTexture& cpy)
 	{
 		this->pixels = cpy.pixels;
 		this->w = cpy.w;
 		this->h = cpy.h;
 		return *this;
 	}
-	TextureGreyscale& operator=(TextureGreyscale&& mov)
+	StandardTexture& operator=(StandardTexture&& mov)
 	{
 		this->pixels = std::move(mov.pixels);
 		this->w = mov.w;
@@ -43,430 +36,101 @@ public:
 		mov.h = 0;
 		return *this;
 	}
+	StandardTexture() : w(0), h(0) {
+
+	}
+	StandardTexture(unsigned w, unsigned h) : pixels(w*h), w(w), h(h)
+	{
+		memset(pixels.data(),0,pixels.size() * sizeof(PixelType));
+	}
+	StandardTexture(unsigned w, unsigned h, const PixelType* pixels) : pixels(w*h), w(w), h(h)
+	{
+		memcpy(this->pixels.data(),pixels,this->pixels.size() * sizeof(PixelType));
+	}
 	void* getPixels() { return pixels.data(); }
 	void clear() {
-		memset(pixels.data(),0,pixels.size() * sizeof(Precision));
+		memset(pixels.data(),0,pixels.size() * sizeof(PixelType));
 	}
 	const void* getPixels() const { return pixels.data(); }
 	unsigned getW() const { return w; }
 	unsigned getH() const { return h; }
 	unsigned getPictureSize() const { return pixels.size(); }
-	unsigned getPixelSize() const { return sizeof(Precision); }
-	unsigned getSizeInBytes() const { return pixels.size() * sizeof(Precision); }
-	unsigned getStride() const { return w*sizeof(Precision); }
+	unsigned getPixelSize() const { return sizeof(PixelType); }
+	unsigned getSizeInBytes() const { return pixels.size() * sizeof(PixelType); }
+	unsigned getStride() const { return w*sizeof(PixelType); }
 	void setPixel(const glm::ivec2& pos, const glm::vec4& col) {
-		Precision& pixel = pixels[(w*(pos.y%h))+(pos.x%w)];
-		pixel = fdenormalize<Precision>(col.r);
+		PixelType& pixel = pixels[(w*(pos.y%h))+(pos.x%w)];
+		pixel.fromVec4(col);
 	}
 	void getPixel(const glm::ivec2& pos, glm::vec4& col) const {
-		const float pixel = fnormalize(pixels[(w*(pos.y%h))+(pos.x%w)]);
-		col.r = pixel;
-		col.g = pixel;
-		col.b = pixel;
-		col.a = 1.0f;
+		const PixelType& pixel = pixels[(w*(pos.y%h))+(pos.x%w)];
+		pixel.toVec4(col);
 	}
 };
 
-template <typename Precision> class TextureRGB : public Texture {
-public:
-	struct PixelRGB {
-		Precision r,g,b;
-	};
-private:
-	std::vector<PixelRGB> pixels;
-	unsigned w,h;
-public:
-	TextureRGB() : w(0), h(0) {
-
-	}
-	TextureRGB(unsigned w, unsigned h) : pixels(w*h), w(w), h(h)
-	{
-		memset(pixels.data(),0,pixels.size() * sizeof(PixelRGB));
-	}
-	TextureRGB(const TextureRGB& cpy) : pixels(cpy.pixels), w(cpy.w), h(cpy.h)
-	{
-
-	}
-	TextureRGB(TextureRGB&& mov) : pixels(std::move(mov.pixels)), w(mov.w), h(mov.h)
-	{
-		mov.w = 0;
-		mov.h = 0;
-	}
-	TextureRGB& operator=(const TextureRGB& cpy)
-	{
-		this->pixels = cpy.pixels;
-		this->w = cpy.w;
-		this->h = cpy.h;
-		return *this;
-	}
-	TextureRGB& operator=(TextureRGB&& mov)
-	{
-		this->pixels = std::move(mov.pixels);
-		this->w = mov.w;
-		this->h = mov.h;
-		mov.w = 0;
-		mov.h = 0;
-		return *this;
-	}
-	void* getPixels() { return pixels.data(); }
-	void clear() {
-		memset(pixels.data(),0,pixels.size() * sizeof(PixelRGB));
-	}
-	const void* getPixels() const { return pixels.data(); }
-	unsigned getW() const { return w; }
-	unsigned getH() const { return h; }
-	unsigned getPictureSize() const { return pixels.size(); }
-	unsigned getPixelSize() const { return sizeof(PixelRGB); }
-	unsigned getSizeInBytes() const { return pixels.size() * sizeof(PixelRGB); }
-	unsigned getStride() const { return w*sizeof(PixelRGB); }
-	void setPixel(const glm::ivec2& pos, const glm::vec4& col) {
-		PixelRGB& pixel = pixels[(w*(pos.y%h))+(pos.x%w)];
-		pixel.r = fdenormalize<Precision>(col.r);
-		pixel.g = fdenormalize<Precision>(col.g);
-		pixel.b = fdenormalize<Precision>(col.b);
-	}
-	void getPixel(const glm::ivec2& pos, glm::vec4& col) const {
-		const PixelRGB& pixel = pixels[(w*(pos.y%h))+(pos.x%w)];
-		col.r = fnormalize(pixel.r);
-		col.g = fnormalize(pixel.g);
-		col.b = fnormalize(pixel.b);
-		col.a = 1.0f;
-	}
-};
-template <typename Precision> class TextureRGBA : public Texture {
-public:
-	struct PixelRGBA {
-		Precision r,g,b,a;
-	};
-private:
-	std::vector<PixelRGBA> pixels;
-	unsigned w,h;
-public:
-	TextureRGBA() : w(0), h(0) {
-
-	}
-	TextureRGBA(unsigned w, unsigned h) : pixels(w*h), w(w), h(h)
-	{
-		memset(pixels.data(),0,pixels.size() * sizeof(PixelRGBA));
-	}
-	TextureRGBA(const TextureRGBA& cpy) : pixels(cpy.pixels), w(cpy.w), h(cpy.h)
-	{
-
-	}
-	TextureRGBA(TextureRGBA&& mov) : pixels(std::move(mov.pixels)), w(mov.w), h(mov.h)
-	{
-		mov.w = 0;
-		mov.h = 0;
-	}
-	TextureRGBA& operator=(const TextureRGBA& cpy)
-	{
-		this->pixels = cpy.pixels;
-		this->w = cpy.w;
-		this->h = cpy.h;
-		return *this;
-	}
-	TextureRGBA& operator=(TextureRGBA&& mov)
-	{
-		this->pixels = std::move(mov.pixels);
-		this->w = mov.w;
-		this->h = mov.h;
-		mov.w = 0;
-		mov.h = 0;
-		return *this;
-	}
-	void* getPixels() { return pixels.data(); }
-	void clear() {
-		memset(pixels.data(),0,pixels.size() * sizeof(PixelRGBA));
-	}
-	const void* getPixels() const { return pixels.data(); }
-	unsigned getW() const { return w; }
-	unsigned getH() const { return h; }
-	unsigned getPictureSize() const { return pixels.size(); }
-	unsigned getPixelSize() const { return sizeof(PixelRGBA); }
-	unsigned getSizeInBytes() const { return pixels.size() * sizeof(PixelRGBA); }
-	unsigned getStride() const { return w*sizeof(PixelRGBA); }
-	void setPixel(const glm::ivec2& pos, const glm::vec4& col) {
-		PixelRGBA& pixel = pixels[(w*(pos.y%h))+(pos.x%w)];
-		pixel.r = fdenormalize<Precision>(col.r);
-		pixel.g = fdenormalize<Precision>(col.g);
-		pixel.b = fdenormalize<Precision>(col.b);
-		pixel.a = fdenormalize<Precision>(col.a);
-	}
-	void getPixel(const glm::ivec2& pos, glm::vec4& col) const {
-		const PixelRGBA& pixel = pixels[(w*(pos.y%h))+(pos.x%w)];
-		col.r = fnormalize(pixel.r);
-		col.g = fnormalize(pixel.g);
-		col.b = fnormalize(pixel.b);
-		col.a = fnormalize(pixel.a);
-	}
-};
-template <typename Precision> class TextureBGR : public Texture {
-public:
-	struct PixelBGR {
-		Precision b,g,r;
-	};
-private:
-	std::vector<PixelBGR> pixels;
-	unsigned w,h;
-public:
-	TextureBGR() : w(0), h(0) {
-
-	}
-	TextureBGR(unsigned w, unsigned h) : pixels(w*h), w(w), h(h)
-	{
-		memset(pixels.data(),0,pixels.size() * sizeof(PixelBGR));
-	}
-	TextureBGR(const TextureBGR& cpy) : pixels(cpy.pixels), w(cpy.w), h(cpy.h)
-	{
-
-	}
-	TextureBGR(TextureBGR&& mov) : pixels(std::move(mov.pixels)), w(mov.w), h(mov.h)
-	{
-		mov.w = 0;
-		mov.h = 0;
-	}
-	TextureBGR& operator=(const TextureBGR& cpy)
-	{
-		this->pixels = cpy.pixels;
-		this->w = cpy.w;
-		this->h = cpy.h;
-		return *this;
-	}
-	TextureBGR& operator=(TextureBGR&& mov)
-	{
-		this->pixels = std::move(mov.pixels);
-		this->w = mov.w;
-		this->h = mov.h;
-		mov.w = 0;
-		mov.h = 0;
-		return *this;
-	}
-	void* getPixels() { return pixels.data(); }
-	void clear() {
-		memset(pixels.data(),0,pixels.size() * sizeof(PixelBGR));
-	}
-	const void* getPixels() const { return pixels.data(); }
-	unsigned getW() const { return w; }
-	unsigned getH() const { return h; }
-	unsigned getPictureSize() const { return pixels.size(); }
-	unsigned getPixelSize() const { return sizeof(PixelBGR); }
-	unsigned getSizeInBytes() const { return pixels.size() * sizeof(PixelBGR); }
-	unsigned getStride() const { return w*sizeof(PixelBGR); }
-	void setPixel(const glm::ivec2& pos, const glm::vec4& col) {
-		PixelBGR& pixel = pixels[(w*(pos.y%h))+(pos.x%w)];
-		pixel.b = fdenormalize<Precision>(col.b);
-		pixel.g = fdenormalize<Precision>(col.g);
-		pixel.r = fdenormalize<Precision>(col.r);
-	}
-	void getPixel(const glm::ivec2& pos, glm::vec4& col) const {
-		const PixelBGR& pixel = pixels[(w*(pos.y%h))+(pos.x%w)];
-		col.b = fnormalize(pixel.b);
-		col.g = fnormalize(pixel.g);
-		col.r = fnormalize(pixel.r);
-		col.a = 1.0f;
-	}
-};
-template <typename Precision> class TextureBGRA : public Texture {
-public:
-	struct PixelBGRA {
-		Precision b,g,r,a;
-	};
-private:
-	std::vector<PixelBGRA> pixels;
-	unsigned w,h;
-public:
-	TextureBGRA() : w(0), h(0) {
-
-	}
-	TextureBGRA(unsigned w, unsigned h) : pixels(w*h), w(w), h(h)
-	{
-		memset(pixels.data(),0,pixels.size() * sizeof(PixelBGRA));
-	}
-	TextureBGRA(const TextureBGRA& cpy) : pixels(cpy.pixels), w(cpy.w), h(cpy.h)
-	{
-
-	}
-	TextureBGRA(TextureBGRA&& mov) : pixels(std::move(mov.pixels)), w(mov.w), h(mov.h)
-	{
-		mov.w = 0;
-		mov.h = 0;
-	}
-	TextureBGRA& operator=(const TextureBGRA& cpy)
-	{
-		this->pixels = cpy.pixels;
-		this->w = cpy.w;
-		this->h = cpy.h;
-		return *this;
-	}
-	TextureBGRA& operator=(TextureBGRA&& mov)
-	{
-		this->pixels = std::move(mov.pixels);
-		this->w = mov.w;
-		this->h = mov.h;
-		mov.w = 0;
-		mov.h = 0;
-		return *this;
-	}
-	void* getPixels() { return pixels.data(); }
-	void clear() {
-		memset(pixels.data(),0,pixels.size() * sizeof(PixelBGRA));
-	}
-	const void* getPixels() const { return pixels.data(); }
-	unsigned getW() const { return w; }
-	unsigned getH() const { return h; }
-	unsigned getPictureSize() const { return pixels.size(); }
-	unsigned getPixelSize() const { return sizeof(PixelBGRA); }
-	unsigned getSizeInBytes() const { return pixels.size() * sizeof(PixelBGRA); }
-	unsigned getStride() const { return w*sizeof(PixelBGRA); }
-	void setPixel(const glm::ivec2& pos, const glm::vec4& col) {
-		PixelBGRA& pixel = pixels[(w*(pos.y%h))+(pos.x%w)];
-		pixel.r = fdenormalize<Precision>(col.r);
-		pixel.g = fdenormalize<Precision>(col.g);
-		pixel.b = fdenormalize<Precision>(col.b);
-		pixel.a = fdenormalize<Precision>(col.a);
-	}
-	void getPixel(const glm::ivec2& pos, glm::vec4& col) const {
-		const PixelBGRA& pixel = pixels[(w*(pos.y%h))+(pos.x%w)];
-		col.b = fnormalize(pixel.b);
-		col.g = fnormalize(pixel.g);
-		col.r = fnormalize(pixel.r);
-		col.a = fnormalize(pixel.a);
-	}
-};
-template <typename Precision> class TextureARGB : public Texture {
-public:
-	struct PixelARGB {
-		Precision a,r,g,b;
-	};
-private:
-	std::vector<PixelARGB> pixels;
-	unsigned w,h;
-public:
-	TextureARGB() : w(0), h(0) {
-
-	}
-	TextureARGB(unsigned w, unsigned h) : pixels(w*h), w(w), h(h)
-	{
-		memset(pixels.data(),0,pixels.size() * sizeof(PixelARGB));
-	}
-	TextureARGB(const TextureARGB& cpy) : pixels(cpy.pixels), w(cpy.w), h(cpy.h)
-	{
-
-	}
-	TextureARGB(TextureARGB&& mov) : pixels(std::move(mov.pixels)), w(mov.w), h(mov.h)
-	{
-		mov.w = 0;
-		mov.h = 0;
-	}
-	TextureARGB& operator=(const TextureARGB& cpy)
-	{
-		this->pixels = cpy.pixels;
-		this->w = cpy.w;
-		this->h = cpy.h;
-		return *this;
-	}
-	TextureARGB& operator=(TextureARGB&& mov)
-	{
-		this->pixels = std::move(mov.pixels);
-		this->w = mov.w;
-		this->h = mov.h;
-		mov.w = 0;
-		mov.h = 0;
-		return *this;
-	}
-	void* getPixels() { return pixels.data(); }
-	void clear() {
-		memset(pixels.data(),0,pixels.size() * sizeof(PixelARGB));
-	}
-	const void* getPixels() const { return pixels.data(); }
-	unsigned getW() const { return w; }
-	unsigned getH() const { return h; }
-	unsigned getPictureSize() const { return pixels.size(); }
-	unsigned getPixelSize() const { return sizeof(PixelARGB); }
-	unsigned getSizeInBytes() const { return pixels.size() * sizeof(PixelARGB); }
-	unsigned getStride() const { return w*sizeof(PixelARGB); }
-	void setPixel(const glm::ivec2& pos, const glm::vec4& col) {
-		PixelARGB& pixel = pixels[(w*(pos.y%h))+(pos.x%w)];
-		pixel.a = fdenormalize<Precision>(col.a);
-		pixel.r = fdenormalize<Precision>(col.r);
-		pixel.g = fdenormalize<Precision>(col.g);
-		pixel.b = fdenormalize<Precision>(col.b);
-	}
-	void getPixel(const glm::ivec2& pos, glm::vec4& col) const {
-		const PixelARGB& pixel = pixels[(w*(pos.y%h))+(pos.x%w)];
-		col.a = fnormalize(pixel.a);
-		col.r = fnormalize(pixel.r);
-		col.g = fnormalize(pixel.g);
-		col.b = fnormalize(pixel.b);
-	}
-};
-template <typename Precision> class TextureABGR : public Texture {
-public:
-	struct PixelABGR {
-		Precision a,b,g,r;
-	};
-private:
-	std::vector<PixelABGR> pixels;
-	unsigned w,h;
-public:
-	TextureABGR() : w(0), h(0) {
-
-	}
-	TextureABGR(unsigned w, unsigned h) : pixels(w*h), w(w), h(h)
-	{
-		memset(pixels.data(),0,pixels.size() * sizeof(PixelABGR));
-	}
-	TextureABGR(const TextureABGR& cpy) : pixels(cpy.pixels), w(cpy.w), h(cpy.h)
-	{
-
-	}
-	TextureABGR(TextureABGR&& mov) : pixels(std::move(mov.pixels)), w(mov.w), h(mov.h)
-	{
-		mov.w = 0;
-		mov.h = 0;
-	}
-	TextureABGR& operator=(const TextureABGR& cpy)
-	{
-		this->pixels = cpy.pixels;
-		this->w = cpy.w;
-		this->h = cpy.h;
-		return *this;
-	}
-	TextureABGR& operator=(TextureABGR&& mov)
-	{
-		this->pixels = std::move(mov.pixels);
-		this->w = mov.w;
-		this->h = mov.h;
-		mov.w = 0;
-		mov.h = 0;
-		return *this;
-	}
-	void* getPixels() { return pixels.data(); }
-	void clear() {
-		memset(pixels.data(),0,pixels.size() * sizeof(PixelABGR));
-	}
-	const void* getPixels() const { return pixels.data(); }
-	unsigned getW() const { return w; }
-	unsigned getH() const { return h; }
-	unsigned getPictureSize() const { return pixels.size(); }
-	unsigned getPixelSize() const { return sizeof(PixelABGR); }
-	unsigned getSizeInBytes() const { return pixels.size() * sizeof(PixelABGR); }
-	unsigned getStride() const { return w*sizeof(PixelABGR); }
-	void setPixel(const glm::ivec2& pos, const glm::vec4& col) {
-		PixelABGR& pixel = pixels[(w*(pos.y%h))+(pos.x%w)];
-		pixel.a = fdenormalize<Precision>(col.a);
-		pixel.r = fdenormalize<Precision>(col.r);
-		pixel.g = fdenormalize<Precision>(col.g);
-		pixel.b = fdenormalize<Precision>(col.b);
-	}
-	void getPixel(const glm::ivec2& pos, glm::vec4& col) const {
-		const PixelABGR& pixel = pixels[(w*(pos.y%h))+(pos.x%w)];
-		col.a = fnormalize(pixel.a);
-		col.r = fnormalize(pixel.r);
-		col.g = fnormalize(pixel.g);
-		col.b = fnormalize(pixel.b);
-	}
-};
-
+// 8-bit Unsigned integer
+typedef StandardTexture<PixelGreyscaleU8> TextureGreyscaleU8;
+typedef StandardTexture<PixelRgbU8> TextureRgbU8;
+typedef StandardTexture<PixelRgbaU8> TextureRgbaU8;
+typedef StandardTexture<PixelArgbU8> TextureArgbU8;
+typedef StandardTexture<PixelBgrU8> TextureBgrU8;
+typedef StandardTexture<PixelBgraU8> TextureBgraU8;
+typedef StandardTexture<PixelAbgrU8> TextureAbgrU8;
+// 8-bit Signed integer
+typedef StandardTexture<PixelGreyscaleS8> TextureGreyscaleS8;
+typedef StandardTexture<PixelRgbS8> TextureRgbS8;
+typedef StandardTexture<PixelRgbaS8> TextureRgbaS8;
+typedef StandardTexture<PixelArgbS8> TextureArgbS8;
+typedef StandardTexture<PixelBgrS8> TextureBgrS8;
+typedef StandardTexture<PixelBgraS8> TextureBgraS8;
+typedef StandardTexture<PixelAbgrS8> TextureAbgrS8;
+// 16-bit Unsigned integer
+typedef StandardTexture<PixelGreyscaleU16> TextureGreyscaleU16;
+typedef StandardTexture<PixelRgbU16> TextureRgbU16;
+typedef StandardTexture<PixelRgbaU16> TextureRgbaU16;
+typedef StandardTexture<PixelArgbU16> TextureArgbU16;
+typedef StandardTexture<PixelBgrU16> TextureBgrU16;
+typedef StandardTexture<PixelBgraU16> TextureBgraU16;
+typedef StandardTexture<PixelAbgrU16> TextureAbgrU16;
+// 16-bit Signed integer
+typedef StandardTexture<PixelGreyscaleS16> TextureGreyscaleS16;
+typedef StandardTexture<PixelRgbS16> TextureRgbS16;
+typedef StandardTexture<PixelRgbaS16> TextureRgbaS16;
+typedef StandardTexture<PixelArgbS16> TextureArgbS16;
+typedef StandardTexture<PixelBgrS16> TextureBgrS16;
+typedef StandardTexture<PixelBgraS16> TextureBgraS16;
+typedef StandardTexture<PixelAbgrS16> TextureAbgrS16;
+// 32-bit Unsigned integer
+typedef StandardTexture<PixelGreyscaleU32> TextureGreyscaleU32;
+typedef StandardTexture<PixelRgbU32> TextureRgbU32;
+typedef StandardTexture<PixelRgbaU32> TextureRgbaU32;
+typedef StandardTexture<PixelArgbU32> TextureArgbU32;
+typedef StandardTexture<PixelBgrU32> TextureBgrU32;
+typedef StandardTexture<PixelBgraU32> TextureBgraU32;
+typedef StandardTexture<PixelAbgrU32> TextureAbgrU32;
+// 32-bit Signed integer
+typedef StandardTexture<PixelGreyscaleS32> TextureGreyscaleS32;
+typedef StandardTexture<PixelRgbS32> TextureRgbS32;
+typedef StandardTexture<PixelRgbaS32> TextureRgbaS32;
+typedef StandardTexture<PixelArgbS32> TextureArgbS32;
+typedef StandardTexture<PixelBgrS32> TextureBgrS32;
+typedef StandardTexture<PixelBgraS32> TextureBgraS32;
+typedef StandardTexture<PixelAbgrS32> TextureAbgrS32;
+// 16-bit float
+typedef StandardTexture<PixelGreyscaleF16> TextureGreyscaleF16;
+typedef StandardTexture<PixelRgbF16> TextureRgbF16;
+typedef StandardTexture<PixelRgbaF16> TextureRgbaF16;
+typedef StandardTexture<PixelArgbF16> TextureArgbF16;
+typedef StandardTexture<PixelBgrF16> TextureBgrF16;
+typedef StandardTexture<PixelBgraF16> TextureBgraF16;
+typedef StandardTexture<PixelAbgrF16> TextureAbgrF16;
+// 32-bit float
+typedef StandardTexture<PixelGreyscaleF32> TextureGreyscaleF32;
+typedef StandardTexture<PixelRgbF32> TextureRgbF32;
+typedef StandardTexture<PixelRgbaF32> TextureRgbaF32;
+typedef StandardTexture<PixelArgbF32> TextureArgbF32;
+typedef StandardTexture<PixelBgrF32> TextureBgrF32;
+typedef StandardTexture<PixelBgraF32> TextureBgraF32;
+typedef StandardTexture<PixelAbgrF32> TextureAbgrF32;
 
 #endif // STANDARDTEXTURE_HPP

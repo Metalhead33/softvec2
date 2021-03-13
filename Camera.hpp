@@ -37,6 +37,7 @@ public:
 	void ProcessKeyboard(Movement direction, float deltaTime);
 	glm::mat4 GetViewMatrix();
 	float getZoom();
+	void reset();
 
 	static const float YAW;
 	static const float PITCH;

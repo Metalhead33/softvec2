@@ -64,3 +64,14 @@ glm::vec4 Texture::sampleBilinear(const glm::vec2 &uv) const
 	sampleBilinear(uv,tmp);
 	return tmp;
 }
+
+void Texture::clearToColour(const glm::vec4 &col)
+{
+	const int w = getW();
+	const int h = getH();
+	for(int i = 0; i < w;++i) {
+		for(int j = 0; j < h; ++j) {
+			setPixel(glm::ivec2(i,j),col);
+		}
+	}
+}

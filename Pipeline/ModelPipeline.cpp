@@ -22,9 +22,9 @@ ModelVertexOut modelVertexShader(const ModelUniform &uniform, const ModelVertexI
 void modelFragmentShader(const ModelUniform &uniform, const ModelVertexOut &v0, const ModelVertexOut &v1, const ModelVertexOut &v2, float w0, float w1, float w2, const glm::ivec2 &screenCoord)
 {
 	if(screenCoord.x < 0 || screenCoord.y < 0) return;
-	const float z = 1.0f / (w0 * v0.COORDS.z + w1 * v1.COORDS.z + w2 * v2.COORDS.z);
+	const float z = (w0 * v0.COORDS.z) + (w1 * v1.COORDS.z) + (w2 * v2.COORDS.z);
 	float& zbuffpoint = uniform.zbuffer->get(screenCoord.x,screenCoord.y);
-	if(z <= 0.0f && z <= zbuffpoint) {
+	if(z <= zbuffpoint) {
 	zbuffpoint = z;
 	glm::vec2 texCoord = {
 					(w0 * v0.TEXCOORD.r) + (w1 * v1.TEXCOORD.r) + (w2 * v2.TEXCOORD.r),

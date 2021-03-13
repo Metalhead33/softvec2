@@ -2,17 +2,17 @@
 #include <glm/gtc/matrix_transform.hpp>
 // #include "../audio/AL/OpenALWrapper.hpp"
 
-const float Camera::YAW =-90.0f;
+const float Camera::YAW = 3.14f;
 const float Camera::PITCH = 0.0f;
 const float Camera::SPEED = 2.5f;
-const float Camera::SENSITIVITY = 0.05f;
+const float Camera::SENSITIVITY = 0.005f;
 const float Camera::ZOOM = 45.0f;
 
 Camera::Camera(glm::vec3 position, glm::vec3 up, float yaw, float pitch)
 	: MovementSpeed(SPEED),
 	  MouseSensitivity(SENSITIVITY), Zoom(ZOOM)
 {
-	Front = glm::vec3(0.0f, 0.0f, -1.0f);
+	Front = glm::vec3(0.0f, 0.0f, 1.0f);
 	Position = position;
 	WorldUp = up;
 	Yaw = yaw;
@@ -23,12 +23,22 @@ float Camera::getZoom()
 {
 	return Zoom;
 }
+
+void Camera::reset()
+{
+	Front = glm::vec3(0.0f, 0.0f, 1.0f);
+	Position = glm::vec3(0.0f, 0.0f, 0.0f);
+	WorldUp = glm::vec3(0.0f, 1.0f, 0.0f);
+	Yaw = YAW;
+	Pitch = PITCH;
+	updateCameraVectors();
+}
 Camera::Camera(float posX, float posY, float posZ, float upX,
 	   float upY, float upZ, float yaw, float pitch)
 	: MovementSpeed(SPEED),
 	  MouseSensitivity(SENSITIVITY), Zoom(ZOOM)
 {
-	Front = glm::vec3(0.0f, 0.0f, 1.0f);
+	Front = glm::vec3(0.0f, 0.0f, -1.0f);
 	Position = glm::vec3(posX, posY, posZ);
 	WorldUp = glm::vec3(upX, upY, upZ);
 	Yaw = yaw;
@@ -41,16 +51,20 @@ void Camera::ProcessMouseMovement(float xoffset, float yoffset, float W, float H
 	xoffset *= MouseSensitivity;
 	yoffset *= MouseSensitivity;
 
-	Yaw   += xoffset / W;
-	Pitch += yoffset / H;
+	Yaw   += xoffset;
+	Pitch += yoffset;
 
 	// Make sure that when pitch is out of bounds, screen doesn't get flipped
 	if (constrainPitch)
 	{
-		if (Pitch > 89.0f)
+		/*if (Pitch > 89.0f)
 			Pitch = 89.0f;
 		if (Pitch < -89.0f)
-			Pitch = -89.0f;
+			Pitch = -89.0f;*/
+		if (Pitch >= 3.14)
+			Pitch = 3.14;
+		if (Pitch <= -3.14)
+			Pitch = -3.14;
 	}
 
 	// Update Front, Right and Up Vectors using the updated Euler angles
@@ -117,13 +131,27 @@ void Camera::setMouseSensitivity(float value)
 void Camera::updateCameraVectors()
 {
 	// Calculate the new Front vector
-	glm::vec3 front;
-	front.x = cosf(glm::radians(Yaw)) * cosf(glm::radians(Pitch));
-	front.y = sinf(glm::radians(Pitch));
-	front.z = sinf(glm::radians(Yaw)) * cosf(glm::radians(Pitch));
-	Front = glm::normalize(front);
+	//glm::vec3 front;
+	/*front.x = cosf(Yaw * cosf(Pitch));
+	front.y = sinf(Pitch);
+	front.z = sinf(Yaw * cosf(Pitch));*/
+	Front = glm::vec3(
+		cos(Pitch) * sin(Yaw),
+		sin(Pitch),
+		cos(Pitch) * cos(Yaw)
+	);
+	Front = glm::normalize(Front);
+	Right = glm::vec3(
+				sin(Yaw - 3.14f/2.0f),
+				0.0f,
+				cos(Yaw - 3.14f/2.0f)
+			);
+	Right = glm::normalize(Right);
+	Up = glm::cross( Right, Front );
+	Up = glm::normalize(Up);
+
 	// Also re-calculate the Right and Up vector
-	Right = glm::normalize(glm::cross(Front, WorldUp));  // Normalize the vectors, because their length gets closer to 0 the more you look up or down which results in slower movement.
-	Up    = glm::normalize(glm::cross(Right, Front));
+	//Right = glm::normalize(glm::cross(Front, WorldUp));  // Normalize the vectors, because their length gets closer to 0 the more you look up or down which results in slower movement.
+	//Up    = glm::normalize(glm::cross(Right, Front));
 	// alListenerfv(AL_ORIENTATION,reinterpret_cast<const ALfloat*>(&alRelevant));
 }

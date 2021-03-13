@@ -20,13 +20,14 @@ SOURCES += \
 HEADERS += \
 	Camera.hpp \
 	CreateTexture.hpp \
-	MhNormDenorm.hpp \
+	PalettedTexture.hpp \
 	Pipeline/BasicPipeline.hpp \
 	Pipeline/ClipspacePipeline.hpp \
 	Pipeline/Model2Pipeline.hpp \
 	Pipeline/ModelPipeline.hpp \
 	Pipeline/RenderingPipeline.hpp \
 	Pipeline/TriangleSort.hpp \
+	StandardPixelType.hpp \
 	StandardTexture.hpp \
 	Texture.hpp \
 	ZBuffer.hpp

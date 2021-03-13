@@ -1,5 +1,6 @@
 #include "ZBuffer.hpp"
 #include <limits>
+#include <cstring>
 
 ZBuffer::ZBuffer() : w(0), h(0)
 {
@@ -23,8 +24,10 @@ unsigned ZBuffer::getW() const
 
 void ZBuffer::clear()
 {
+	//memset(buff.data(),0,buff.size()*sizeof(float));
 	for(auto& it : buff) {
-		it = std::numeric_limits<float>::infinity();
+		//it = std::numeric_limits<float>::infinity();
+		it = 1.0f;
 	}
 }
 
