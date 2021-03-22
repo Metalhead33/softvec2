@@ -13,7 +13,10 @@ SOURCES += \
         Pipeline/Model2Pipeline.cpp \
         Pipeline/ModelPipeline.cpp \
         Pipeline/TriangleSort.cpp \
+        Pipeline/WidgetPipeline.cpp \
         Texture.cpp \
+        Tile/Terrain.cpp \
+        Tile/Tile.cpp \
         ZBuffer.cpp \
         main.cpp
 
@@ -27,7 +30,10 @@ HEADERS += \
 	Pipeline/ModelPipeline.hpp \
 	Pipeline/RenderingPipeline.hpp \
 	Pipeline/TriangleSort.hpp \
+	Pipeline/WidgetPipeline.hpp \
 	StandardPixelType.hpp \
 	StandardTexture.hpp \
 	Texture.hpp \
+	Tile/Terrain.hpp \
+	Tile/Tile.hpp \
 	ZBuffer.hpp

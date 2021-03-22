@@ -1,5 +1,22 @@
 #include "Texture.hpp"
 
+void Texture::sample(const glm::vec2 &uv, const glm::ivec2 &screencoords, glm::vec4 &col, TextureFiltering filteringType) const
+{
+	switch (filteringType) {
+	case TextureFiltering::NEAREST_NEIGHBOUR:
+		sampleNearestNeighbour(uv,col);
+		break;
+	case TextureFiltering::DITHERED:
+		sampleDithered(uv,screencoords,col);
+		break;
+	case TextureFiltering::BILINEAR:
+		sampleBilinear(uv,col);
+		break;
+	default:
+		break;
+	}
+}
+
 void Texture::sampleNearestNeighbour(const glm::vec2 &uv, glm::vec4 &col) const
 {
 	getPixel(glm::ivec2( int(std::round(uv.x * float(getW()-1))), int(std::round(uv.y * float(getH()-1))) ),col);
@@ -44,6 +61,13 @@ glm::vec4 Texture::getPixel(const glm::ivec2 &pos)
 	return tmp;
 }
 
+glm::vec4 Texture::sample(const glm::vec2 &uv, const glm::ivec2 &screencoords, TextureFiltering filteringType) const
+{
+	glm::vec4 tmp;
+	sample(uv,screencoords,tmp,filteringType);
+	return tmp;
+}
+
 glm::vec4 Texture::sampleNearestNeighbour(const glm::vec2 &uv) const
 {
 	glm::vec4 tmp;
@@ -65,13 +89,35 @@ glm::vec4 Texture::sampleBilinear(const glm::vec2 &uv) const
 	return tmp;
 }
 
-void Texture::clearToColour(const glm::vec4 &col)
+void Texture::clearToColour(const glm::vec4 &colour)
 {
-	const int w = getW();
-	const int h = getH();
-	for(int i = 0; i < w;++i) {
-		for(int j = 0; j < h; ++j) {
-			setPixel(glm::ivec2(i,j),col);
-		}
+	iterateOverPixels([&colour](glm::vec4& dst) { dst = colour; }, false );
+}
+
+const glm::vec4 thresholdMatrix[4] = {
+glm::vec4(1.0 / 17.0,  9.0 / 17.0,  3.0 / 17.0, 11.0 / 17.0),
+glm::vec4(13.0 / 17.0,  5.0 / 17.0, 15.0 / 17.0,  7.0 / 17.0),
+glm::vec4(4.0 / 17.0, 12.0 / 17.0,  2.0 / 17.0, 10.0 / 17.0),
+glm::vec4(16.0 / 17.0,  8.0 / 17.0, 14.0 / 17.0,  6.0 / 17.0)
+};
+
+bool Texture::setPixelWithBlending(const glm::ivec2 &pos, const glm::vec4 &col, AlphaBlending blendingMode)
+{
+	float a = col.a;
+	if(blendingMode == AlphaBlending::DITHERED) a = (a >= thresholdMatrix[pos.x % 4][pos.y % 4]) ? 1.0f : 0.0f;
+	if(a >= 0.99607843137255f) {
+		setPixel(pos,col);
+		return true;
+	} else if(a <= 0.003921568627451f) {
+		return false;
+	} else {
+		glm::vec4 kernel = getPixel(pos);
+		const float rem = 1.0f - a;
+		kernel.r = (kernel.r * rem) + (col.r * a);
+		kernel.g = (kernel.g * rem) + (col.g * a);
+		kernel.b = (kernel.b * rem) + (col.b * a);
+		kernel.a = std::min(1.0f,kernel.a + a);
+		setPixel(pos,kernel);
+		return true;
 	}
 }

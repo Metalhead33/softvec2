@@ -66,6 +66,22 @@ public:
 		const PixelType& pixel = pixels[(w*(pos.y%h))+(pos.x%w)];
 		pixel.toVec4(col);
 	}
+	void iterateOverPixels(const PixelModifier& modifier, bool requiresOriginalPixel) {
+		if(requiresOriginalPixel) {
+			glm::vec4 kernel;
+			for(auto& it : pixels) {
+				it.toVec4(kernel);
+				modifier(kernel);
+				it.fromVec4(kernel);
+			}
+		} else {
+			glm::vec4 kernel;
+			modifier(kernel);
+			for(auto& it : pixels) {
+				it.fromVec4(kernel);
+			}
+		}
+	}
 };
 
 // 8-bit Unsigned integer

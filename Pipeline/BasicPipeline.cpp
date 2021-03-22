@@ -15,5 +15,5 @@ void basicFragmentShader(const BasicUniform& uniform, const BasicVertexOut& v0,c
 					(w0 * v0.COLOUR.b) + (w1 * v1.COLOUR.b) + (w2 * v2.COLOUR.b),
 					(w0 * v0.COLOUR.a) + (w1 * v1.COLOUR.a) + (w2 * v2.COLOUR.a)
 					};
-	uniform.framebuffer->setPixel(screenCoord,colourKernel);
+	uniform.framebuffer->setPixelWithBlending(screenCoord,colourKernel,uniform.blendingMode);
 }

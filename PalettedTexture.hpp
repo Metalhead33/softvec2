@@ -115,6 +115,10 @@ public:
 		const PixelType& pixel = clut->getColour(pixels[(w*(pos.y%h))+(pos.x%w)]);
 		pixel.toVec4(col);
 	}
+	void iterateOverPixels(const PixelModifier& modifier, bool requiresOriginalPixel) {
+		(void)modifier;
+		(void)requiresOriginalPixel;
+	}
 };
 
 // 8-bit Unsigned integer

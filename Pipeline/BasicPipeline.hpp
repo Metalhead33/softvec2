@@ -5,6 +5,7 @@
 
 struct BasicUniform {
 	Texture* framebuffer;
+	AlphaBlending blendingMode;
 };
 struct BasicVertexIn {
 	glm::vec3 COORDS;

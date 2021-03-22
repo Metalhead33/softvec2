@@ -15,24 +15,12 @@ void clipspaceFragmentShader(const ClipspaceUniform &uniform, const ClipspaceVer
 	const float z = 1.0f / (w0 * v0.COORDS.z + w1 * v1.COORDS.z + w2 * v2.COORDS.z);
 	float& zbuffpoint = uniform.zbuffer->get(screenCoord.x,screenCoord.y);
 	if(z <= 0.0f && z <= zbuffpoint) {
-	zbuffpoint = z;
 	glm::vec2 texCoord = {
 					(w0 * v0.TEXCOORD.r) + (w1 * v1.TEXCOORD.r) + (w2 * v2.TEXCOORD.r),
 					(w0 * v0.TEXCOORD.g) + (w1 * v1.TEXCOORD.g) + (w2 * v2.TEXCOORD.g)
 					};
 	if(uniform.perspectiveCorrection) texCoord *= z;
-	switch (uniform.sampling) {
-	case TextureFiltering::NEAREST_NEIGHBOUR:
-		uniform.framebuffer->setPixel(screenCoord,uniform.tex->sampleNearestNeighbour(texCoord));
-		break;
-	case TextureFiltering::DITHERED:
-		uniform.framebuffer->setPixel(screenCoord,uniform.tex->sampleDithered(texCoord,screenCoord));
-		break;
-	case TextureFiltering::BILINEAR:
-		uniform.framebuffer->setPixel(screenCoord,uniform.tex->sampleBilinear(texCoord));
-		break;
-	default:
-		break;
-	}
+	glm::vec4 pixelOut = uniform.tex->sample(texCoord,screenCoord,uniform.sampling);
+	if ( uniform.framebuffer->setPixelWithBlending(screenCoord,pixelOut,uniform.blendingMode) ) zbuffpoint = z;
 	}
 }

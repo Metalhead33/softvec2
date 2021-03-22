@@ -10,6 +10,7 @@ struct ClipspaceUniform {
 	bool perspectiveCorrection;
 	Texture* tex;
 	TextureFiltering sampling;
+	AlphaBlending blendingMode;
 };
 struct ClipspaceVertexIn {
 	glm::vec3 COORDS;

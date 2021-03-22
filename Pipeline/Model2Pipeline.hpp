@@ -10,6 +10,7 @@ struct Model2Uniform {
 	bool perspectiveCorrection;
 	Texture* tex;
 	TextureFiltering sampling;
+	AlphaBlending blendingMode;
 	//glm::mat4 mvp;
 	glm::mat4 mvp;
 	glm::vec2 viewport;
