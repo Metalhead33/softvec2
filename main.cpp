@@ -27,15 +27,6 @@ std::shared_ptr<Texture> tex = nullptr;
 
 
 std::vector<WidgetVertexIn> vertices = {
-/*
-	{ glm::vec2(-0.5f, 1.0f), glm::vec2(0.25f, 0.0f) },	// Index 0
-	{ glm::vec2(0.5f, 1.0f), glm::vec2(0.75f, 0.0f) },	// Index 1
-	{ glm::vec2(1.0f, 0.0f), glm::vec2(1.0f, 0.5f) },	// Index 2
-	{ glm::vec2(-1.0f, 0.0f), glm::vec2(0.0f, 0.5f) },	// Index 3
-	{ glm::vec2(-0.5f, -1.0f), glm::vec2(0.25f, 1.0f) },	// Index 4
-	{ glm::vec2(0.5f, -1.0f), glm::vec2(0.75f, 1.0f) },	// Index 5
-	{ glm::vec2(0.0f, 0.0f), glm::vec2(0.5f, 0.5f) }	// Index 6
-*/
 	{ glm::vec2(0.0f, 1.0f), glm::vec2(0.50f, 0.0f) },	// Index 0
 	{ glm::vec2(-1.0f, 0.5f), glm::vec2(0.00f, 0.25f) },	// Index 1
 	{ glm::vec2(1.0f, 0.5f), glm::vec2(1.00f, 0.25f) },	// Index 2
@@ -44,14 +35,6 @@ std::vector<WidgetVertexIn> vertices = {
 	{ glm::vec2(0.0f, -1.0f), glm::vec2(0.50f, 1.0f) }	// Index 5
 };
 std::vector<unsigned> indices = {
-/*
-	0, 3, 6, // Triangle 1
-	3, 4, 6, // Triangle 2
-	4, 5, 6, // Triangle 3
-	6, 2, 5, // Triangle 4
-	2, 1, 6, // Triangle 5
-	0, 1, 6 // Triangle 6
-*/
 	0, 1, 2, // Triangle 1
 	1, 2, 4, // Triangle 2
 	1, 3, 4, // Triangle 3
@@ -86,7 +69,6 @@ void rennderTileGrid(const Grid& grid, const glm::ivec2& hexagonSize, const glm:
 				const int gridColumn = gridOffset.x + column;
 				if(gridColumn < grid.w) {
 					uniform.tex = TerrainTextures[grid[glm::ivec2(gridRow, gridColumn)].terrainType].get();
-					uniform.offset.y = (column&1) ? rowStartY + yoff2 : rowStartY;
 					WidgetPipeline::renderTriangles(viewport,uniform,vertices.data(),indices.data(),indices.size() );
 					uniform.offset.x += hexagonSize.x;
 				} else break;
