@@ -49,3 +49,28 @@ void PixelRgb565::toVec4(glm::vec4 &col) const
 	col.g = float(g) * i6r;
 	col.b = float(b) * i5r;
 }
+void PixelRgba5551::fromVec4(const glm::vec4 &col)
+{
+	const uint16_t r = uint16_t(col.r * 31.0f);
+	const uint16_t g = uint16_t(col.g * 31.0f);
+	const uint16_t b = uint16_t(col.b * 31.0f);
+	const uint16_t a = uint16_t(col.a >= 0.5f);
+	data = ( (r << 11) | (g << 6) | (b << 1) | a);
+}
+void PixelRgba5551::fromVec4Dithered(const glm::vec4 &col, const glm::ivec2 &coords, float ditherAmount)
+{
+	fromVec4(glm::vec4( dither5(col.r,coords,ditherAmount),
+						dither5(col.g,coords,ditherAmount),
+						dither5(col.b,coords,ditherAmount), col.a ));
+}
+void PixelRgba5551::toVec4(glm::vec4 &col) const
+{
+	const uint16_t r = (data & 0xF800) >> 11;
+	const uint16_t g = (data & 0x07C0) >> 6;
+	const uint16_t b = (data & 0x003E) >> 1;
+	const uint16_t a = (data & 0x0001);
+	col.r = float(r) * i5r;
+	col.g = float(g) * i6r;
+	col.b = float(b) * i5r;
+	col.a = float(a);
+}

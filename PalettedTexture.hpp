@@ -128,6 +128,7 @@ public:
 };
 
 // PixelRgb565
+typedef PalettedTexture<PixelRgba5551> PalettedTextureRgb555;
 typedef PalettedTexture<PixelRgb565> PalettedTextureRgb565;
 // 8-bit Unsigned integer
 typedef PalettedTexture<PixelRgbU8> PalettedTextureRgbU8;

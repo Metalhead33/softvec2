@@ -8,6 +8,18 @@ std::shared_ptr<Texture> createTexture(const MH33::Image::DecodeTarget &decodedI
 	if(decodedImage.frames.size()) {
 		const auto& frame = decodedImage.frames[0];
 		switch (decodedImage.format) {
+		case MH33::Image::Format::RGB555:
+			{
+				std::shared_ptr<TextureRgba5551> tex = std::shared_ptr<TextureRgba5551>(new TextureRgba5551(frame.width,frame.height));
+				memcpy(tex->getPixels(),frame.imageData.data(),frame.imageData.size());
+				return tex;
+			}
+		case MH33::Image::Format::RGB565:
+			{
+				std::shared_ptr<TextureRgb565> tex = std::shared_ptr<TextureRgb565>(new TextureRgb565(frame.width,frame.height));
+				memcpy(tex->getPixels(),frame.imageData.data(),frame.imageData.size());
+				return tex;
+			}
 		case MH33::Image::Format::R8U:
 			{
 				std::shared_ptr<TextureGreyscaleU8> tex = std::shared_ptr<TextureGreyscaleU8>(new TextureGreyscaleU8(frame.width,frame.height));

@@ -14,6 +14,7 @@ SOURCES += \
         Pipeline/ModelPipeline.cpp \
         Pipeline/TriangleSort.cpp \
         Pipeline/WidgetPipeline.cpp \
+        PixelRgb332.cpp \
         PixelRgb565.cpp \
         Texture.cpp \
         Tile/Terrain.cpp \
@@ -33,6 +34,7 @@ HEADERS += \
 	Pipeline/RenderingPipeline.hpp \
 	Pipeline/TriangleSort.hpp \
 	Pipeline/WidgetPipeline.hpp \
+	PixelRgb332.hpp \
 	PixelRgb565.hpp \
 	StandardPixelType.hpp \
 	StandardTexture.hpp \

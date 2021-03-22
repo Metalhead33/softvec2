@@ -4,6 +4,7 @@
 #include "Texture.hpp"
 #include "StandardPixelType.hpp"
 #include "PixelRgb565.hpp"
+#include "PixelRgb332.hpp"
 #include <vector>
 #include <cstring>
 
@@ -89,6 +90,8 @@ public:
 	}
 };
 
+typedef StandardTexture<PixelRgb332> TextureRgb332;
+typedef StandardTexture<PixelRgba5551> TextureRgba5551;
 typedef StandardTexture<PixelRgb565> TextureRgb565;
 // 8-bit Unsigned integer
 typedef StandardTexture<PixelGreyscaleU8> TextureGreyscaleU8;

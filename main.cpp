@@ -22,7 +22,7 @@ static const glm::ivec2 viewport(W,H);
 static const char* MODEL_PATH = "/home/metalhead33/printr/cube.dae";
 int mouseX=0, mouseY=0;
 
-typedef TextureRgb565 Framebuffer;
+typedef TextureRgba5551 Framebuffer;
 Framebuffer framebuffer(W,H);
 std::shared_ptr<Texture> tex = nullptr;
 
@@ -86,7 +86,7 @@ int main()
 			SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, W,H, 0);
 	SDL_Renderer* renderer = SDL_CreateRenderer(window, -1, 0);
 	SDL_Texture* texture = SDL_CreateTexture(renderer,
-			SDL_PIXELFORMAT_RGB565, SDL_TEXTUREACCESS_STREAMING, W,H);
+			SDL_PIXELFORMAT_RGBA5551, SDL_TEXTUREACCESS_STREAMING, W,H);
 	MH33::Io::File pngText("/home/metalhead33/printr/uvtemplate.png",MH33::Io::Mode::READ);
 	BasicUniform basicUniform = {&framebuffer, AlphaBlending::DITHERED};
 	tex = textureFromPNG(pngText);
@@ -113,12 +113,12 @@ struct WidgetUniform {
 		framebuffer.clearToColour(glm::vec4(0.0f,0.0f,0.0f,1.0f));
 		// Draw a triangle
 		//renderHexagonGrid(glm::ivec2(128,128),glm::ivec2(-128,-128),(W/128)+128,(H/128)+128);
-		//renderHexagonGrid(glm::ivec2(128,128),glm::ivec2(128,128),4,4);
-		BasicPipeline::renderTriangle(viewport,basicUniform, BasicVertexIn{ glm::vec3(0.0f, 1.0f, 0.0f), glm::vec4(1.0f, 0.0, 0.0f, 1.0f) },
+		renderHexagonGrid(glm::ivec2(128,128),glm::ivec2(128,128),4,4);
+		/*BasicPipeline::renderTriangle(viewport,basicUniform, BasicVertexIn{ glm::vec3(0.0f, 1.0f, 0.0f), glm::vec4(1.0f, 0.0, 0.0f, 1.0f) },
 										  BasicVertexIn{ glm::vec3(-1.0f, -1.0f, 0.0f), glm::vec4(0.0f, 1.0, 0.0f, 1.0f) },
 										BasicVertexIn{ glm::vec3(1.0f, -1.0f, 0.0f), glm::vec4(0.0f, 0.0, 1.0f, 1.0f) }
-									  );
-		SDL_UpdateTexture(texture, nullptr, framebuffer.getPixels(), 2*W);
+									  );*/
+		SDL_UpdateTexture(texture, nullptr, framebuffer.getPixels(), W*2);
 		SDL_RenderCopy(renderer, texture, nullptr, nullptr);
 		SDL_RenderPresent(renderer);
 		SDL_Delay(1000/60);
