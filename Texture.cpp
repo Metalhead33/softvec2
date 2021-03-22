@@ -106,7 +106,8 @@ bool Texture::setPixelWithBlending(const glm::ivec2 &pos, const glm::vec4 &col, 
 	float a = col.a;
 	if(blendingMode == AlphaBlending::DITHERED) a = (a >= thresholdMatrix[pos.x % 4][pos.y % 4]) ? 1.0f : 0.0f;
 	if(a >= 0.99607843137255f) {
-		setPixel(pos,col);
+		setPixelDithered(pos,col,0.5f);
+		//setPixel(pos,col);
 		return true;
 	} else if(a <= 0.003921568627451f) {
 		return false;
@@ -117,7 +118,7 @@ bool Texture::setPixelWithBlending(const glm::ivec2 &pos, const glm::vec4 &col, 
 		kernel.g = (kernel.g * rem) + (col.g * a);
 		kernel.b = (kernel.b * rem) + (col.b * a);
 		kernel.a = std::min(1.0f,kernel.a + a);
-		setPixel(pos,kernel);
+		setPixelDithered(pos,kernel,0.5f);
 		return true;
 	}
 }

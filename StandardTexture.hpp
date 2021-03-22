@@ -3,6 +3,7 @@
 #include <glm/glm.hpp>
 #include "Texture.hpp"
 #include "StandardPixelType.hpp"
+#include "PixelRgb565.hpp"
 #include <vector>
 #include <cstring>
 
@@ -62,6 +63,10 @@ public:
 		PixelType& pixel = pixels[(w*(pos.y%h))+(pos.x%w)];
 		pixel.fromVec4(col);
 	}
+	virtual void setPixelDithered(const glm::ivec2& pos, const glm::vec4& col, float ditherAmount = 0.5f) {
+		PixelType& pixel = pixels[(w*(pos.y%h))+(pos.x%w)];
+		pixel.fromVec4Dithered(col,pos,ditherAmount);
+	}
 	void getPixel(const glm::ivec2& pos, glm::vec4& col) const {
 		const PixelType& pixel = pixels[(w*(pos.y%h))+(pos.x%w)];
 		pixel.toVec4(col);
@@ -84,6 +89,7 @@ public:
 	}
 };
 
+typedef StandardTexture<PixelRgb565> TextureRgb565;
 // 8-bit Unsigned integer
 typedef StandardTexture<PixelGreyscaleU8> TextureGreyscaleU8;
 typedef StandardTexture<PixelRgbU8> TextureRgbU8;

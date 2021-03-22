@@ -30,6 +30,7 @@ public:
 	virtual unsigned getSizeInBytes() const = 0;
 	virtual unsigned getStride() const = 0;
 	virtual void setPixel(const glm::ivec2& pos, const glm::vec4& col) = 0;
+	virtual void setPixelDithered(const glm::ivec2& pos, const glm::vec4& col, float ditherAmount = 0.5f) = 0;
 	virtual void getPixel(const glm::ivec2& pos, glm::vec4& col) const = 0;
 	virtual void iterateOverPixels(const PixelModifier& modifier, bool requiresOriginalPixel) = 0;
 

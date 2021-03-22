@@ -2,6 +2,7 @@
 #define PALETTEDTEXTURE_HPP
 #include <glm/glm.hpp>
 #include "StandardPixelType.hpp"
+#include "PixelRgb565.hpp"
 #include "Texture.hpp"
 #include <array>
 #include <cstring>
@@ -111,6 +112,11 @@ public:
 		(void)pos;
 		(void)col;
 	}
+	virtual void setPixelDithered(const glm::ivec2& pos, const glm::vec4& col, float ditherAmount = 0.5f) {
+		(void)pos;
+		(void)col;
+		(void)ditherAmount;
+	}
 	void getPixel(const glm::ivec2& pos, glm::vec4& col) const {
 		const PixelType& pixel = clut->getColour(pixels[(w*(pos.y%h))+(pos.x%w)]);
 		pixel.toVec4(col);
@@ -121,6 +127,8 @@ public:
 	}
 };
 
+// PixelRgb565
+typedef PalettedTexture<PixelRgb565> PalettedTextureRgb565;
 // 8-bit Unsigned integer
 typedef PalettedTexture<PixelRgbU8> PalettedTextureRgbU8;
 typedef PalettedTexture<PixelRgbaU8> PalettedTextureRgbaU8;

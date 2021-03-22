@@ -3,10 +3,21 @@
 #include <glm/glm.hpp>
 #include <cstdint>
 #include <MhLib/Util/MhNormDenorm.hpp>
+#include <limits>
+#include "Dither.hpp"
+
 template <typename Precision> struct PixelGreyscale {
 	Precision brightness;
 	void fromVec4(const glm::vec4& col) {
 		brightness = MH33::Util::fdenormalize<Precision>(col.r);
+	}
+	typedef OrderedDither<Precision> Dither;
+	void fromVec4Dithered(const glm::vec4& col, const glm::ivec2& coords, float ditherAmount = 0.5f) {
+		if constexpr(std::numeric_limits<Precision>::is_integer) {
+			brightness = MH33::Util::fdenormalize<Precision>(Dither::ditherDown(col.r,coords,ditherAmount));
+		} else {
+			fromVec4(col);
+		}
 	}
 	void toVec4(glm::vec4& col) const {
 		const float pixel = MH33::Util::fnormalize(brightness);
@@ -24,6 +35,19 @@ template <typename Precision> struct PixelRGB {
 		g = MH33::Util::fdenormalize<Precision>(col.g);
 		b = MH33::Util::fdenormalize<Precision>(col.b);
 	}
+	typedef OrderedDither<Precision> Dither;
+	void fromVec4Dithered(const glm::vec4& col, const glm::ivec2& coords, float ditherAmount = 0.5f) {
+		if constexpr(std::numeric_limits<Precision>::is_integer) {
+			fromVec4(glm::vec4(
+							Dither::ditherDown(col.r,coords,ditherAmount),
+							Dither::ditherDown(col.g,coords,ditherAmount),
+							Dither::ditherDown(col.b,coords,ditherAmount),
+							col.a
+					));
+		} else {
+			fromVec4(col);
+		}
+	}
 	void toVec4(glm::vec4& col) const {
 		col.r = MH33::Util::fnormalize(r);
 		col.g = MH33::Util::fnormalize(g);
@@ -38,6 +62,19 @@ template <typename Precision> struct PixelRGBA {
 		g = MH33::Util::fdenormalize<Precision>(col.g);
 		b = MH33::Util::fdenormalize<Precision>(col.b);
 		a = MH33::Util::fdenormalize<Precision>(col.a);
+	}
+	typedef OrderedDither<Precision> Dither;
+	void fromVec4Dithered(const glm::vec4& col, const glm::ivec2& coords, float ditherAmount = 0.5f) {
+		if constexpr(std::numeric_limits<Precision>::is_integer ) {
+			fromVec4(glm::vec4(
+							Dither::ditherDown(col.r,coords,ditherAmount),
+							Dither::ditherDown(col.g,coords,ditherAmount),
+							Dither::ditherDown(col.b,coords,ditherAmount),
+							Dither::ditherDown(col.a,coords,ditherAmount)
+					));
+		} else {
+			fromVec4(col);
+		}
 	}
 	void toVec4(glm::vec4& col) const {
 		col.r = MH33::Util::fnormalize(r);
@@ -54,6 +91,19 @@ template <typename Precision> struct PixelARGB {
 		g = MH33::Util::fdenormalize<Precision>(col.g);
 		b = MH33::Util::fdenormalize<Precision>(col.b);
 	}
+	typedef OrderedDither<Precision> Dither;
+	void fromVec4Dithered(const glm::vec4& col, const glm::ivec2& coords, float ditherAmount = 0.5f) {
+		if constexpr(std::numeric_limits<Precision>::is_integer) {
+			fromVec4(glm::vec4(
+							Dither::ditherDown(col.r,coords,ditherAmount),
+							Dither::ditherDown(col.g,coords,ditherAmount),
+							Dither::ditherDown(col.b,coords,ditherAmount),
+							Dither::ditherDown(col.a,coords,ditherAmount)
+					));
+		} else {
+			fromVec4(col);
+		}
+	}
 	void toVec4(glm::vec4& col) const {
 		col.a = MH33::Util::fnormalize(a);
 		col.r = MH33::Util::fnormalize(r);
@@ -68,6 +118,19 @@ template <typename Precision> struct PixelBGR {
 		b = MH33::Util::fdenormalize<Precision>(col.b);
 		g = MH33::Util::fdenormalize<Precision>(col.g);
 		r = MH33::Util::fdenormalize<Precision>(col.r);
+	}
+	typedef OrderedDither<Precision> Dither;
+	void fromVec4Dithered(const glm::vec4& col, const glm::ivec2& coords, float ditherAmount = 0.5f) {
+		if constexpr(std::numeric_limits<Precision>::is_integer) {
+			fromVec4(glm::vec4(
+							Dither::ditherDown(col.r,coords,ditherAmount),
+							Dither::ditherDown(col.g,coords,ditherAmount),
+							Dither::ditherDown(col.b,coords,ditherAmount),
+							col.a
+					));
+		} else {
+			fromVec4(col);
+		}
 	}
 	void toVec4(glm::vec4& col) const {
 		col.b = MH33::Util::fnormalize(b);
@@ -84,6 +147,19 @@ template <typename Precision> struct PixelBGRA {
 		r = MH33::Util::fdenormalize<Precision>(col.r);
 		a = MH33::Util::fdenormalize<Precision>(col.a);
 	}
+	typedef OrderedDither<Precision> Dither;
+	void fromVec4Dithered(const glm::vec4& col, const glm::ivec2& coords, float ditherAmount = 0.5f) {
+		if constexpr(std::numeric_limits<Precision>::is_integer) {
+			fromVec4(glm::vec4(
+							Dither::ditherDown(col.r,coords,ditherAmount),
+							Dither::ditherDown(col.g,coords,ditherAmount),
+							Dither::ditherDown(col.b,coords,ditherAmount),
+							Dither::ditherDown(col.a,coords,ditherAmount)
+					));
+		} else {
+			fromVec4(col);
+		}
+	}
 	void toVec4(glm::vec4& col) const {
 		col.b = MH33::Util::fnormalize(b);
 		col.g = MH33::Util::fnormalize(g);
@@ -98,6 +174,19 @@ template <typename Precision> struct PixelABGR {
 		b = MH33::Util::fdenormalize<Precision>(col.b);
 		g = MH33::Util::fdenormalize<Precision>(col.g);
 		r = MH33::Util::fdenormalize<Precision>(col.r);
+	}
+	typedef OrderedDither<Precision> Dither;
+	void fromVec4Dithered(const glm::vec4& col, const glm::ivec2& coords, float ditherAmount = 0.5f) {
+		if constexpr(std::numeric_limits<Precision>::is_integer) {
+			fromVec4(glm::vec4(
+							Dither::ditherDown(col.r,coords,ditherAmount),
+							Dither::ditherDown(col.g,coords,ditherAmount),
+							Dither::ditherDown(col.b,coords,ditherAmount),
+							Dither::ditherDown(col.a,coords,ditherAmount)
+					));
+		} else {
+			fromVec4(col);
+		}
 	}
 	void toVec4(glm::vec4& col) const {
 		col.a = MH33::Util::fnormalize(a);
