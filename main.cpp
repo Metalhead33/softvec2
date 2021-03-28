@@ -51,7 +51,7 @@ std::vector<unsigned> indices = {
 };
 
 void rennderTileGrid(FrameBuff& framebuffer, const Grid& grid, const glm::ivec2& hexagonSize, const glm::ivec2& gridOffset, const glm::ivec2& framebufferOffset, int rows, int columns)  {
-	WidgetUniform uniform = { framebuffer.getTexture(), nullptr, TextureFiltering::NEAREST_NEIGHBOUR, AlphaBlending::DITHERED, hexagonSize, glm::ivec2(0,0) };
+	WidgetUniform uniform = { nullptr, TextureFiltering::NEAREST_NEIGHBOUR, AlphaBlending::DITHERED, hexagonSize, glm::ivec2(0,0) };
 	const int xoff1 = hexagonSize.x / 2;
 	const int yoff2 = int(float(hexagonSize.y) * 0.75f);
 	uniform.offset.y = framebufferOffset.y;
@@ -63,7 +63,7 @@ void rennderTileGrid(FrameBuff& framebuffer, const Grid& grid, const glm::ivec2&
 				const int gridColumn = gridOffset.x + column;
 				if(gridColumn < grid.w) {
 					uniform.tex = TerrainTextures[grid[glm::ivec2(gridRow, gridColumn)].terrainType].get();
-					WidgetPipeline::renderTriangles(viewport,uniform,vertices.data(),indices.data(),indices.size() );
+					WidgetPipeline::renderTriangles(framebuffer,viewport,uniform,vertices.data(),indices.data(),indices.size() );
 					uniform.offset.x += hexagonSize.x;
 				} else break;
 			}

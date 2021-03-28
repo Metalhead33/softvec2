@@ -5,12 +5,11 @@
 #include "../ZBuffer.hpp"
 
 struct ClipspaceUniform {
-	Texture* framebuffer;
-	ZBuffer* zbuffer;
 	bool perspectiveCorrection;
 	Texture* tex;
 	TextureFiltering sampling;
 	AlphaBlending blendingMode;
+	glm::ivec2 viewport;
 };
 struct ClipspaceVertexIn {
 	glm::vec3 COORDS;
@@ -33,7 +32,7 @@ struct ClipspaceVertexOut {
 };
 
 ClipspaceVertexOut clipspaceVertexShader(const ClipspaceUniform& uniform, const ClipspaceVertexIn& input);
-void clipspaceFragmentShader(const ClipspaceUniform& uniform, const ClipspaceVertexOut& v0,const ClipspaceVertexOut& v1,const ClipspaceVertexOut& v2, float w0,float w1,float w2,const glm::ivec2& screenCoord);
+void clipspaceFragmentShader(Framebuffer& framebuffer,const ClipspaceUniform& uniform, const ClipspaceVertexOut& v0,const ClipspaceVertexOut& v1,const ClipspaceVertexOut& v2, float w0,float w1,float w2,const glm::ivec2& screenCoord);
 typedef Pipeline<ClipspaceVertexIn,ClipspaceVertexOut,ClipspaceUniform,clipspaceVertexShader,clipspaceFragmentShader> ClipspacePipeline;
 
 #endif // CLIPSPACEPIPELINE_HPP

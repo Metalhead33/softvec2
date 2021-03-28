@@ -4,7 +4,6 @@
 #include "../Texture.hpp"
 
 struct WidgetUniform {
-	Texture* framebuffer;
 	Texture* tex;
 	TextureFiltering sampling;
 	AlphaBlending blendingMode;
@@ -31,7 +30,7 @@ struct WidgetVertexOut {
 };
 
 WidgetVertexOut widgetVertexShader(const WidgetUniform& uniform, const WidgetVertexIn& input);
-void widgetFragmentShader(const WidgetUniform& uniform, const WidgetVertexOut& v0,const WidgetVertexOut& v1,const WidgetVertexOut& v2, float w0,float w1,float w2,const glm::ivec2& screenCoord);
+void widgetFragmentShader(Framebuffer& framebuffer,const WidgetUniform& uniform, const WidgetVertexOut& v0,const WidgetVertexOut& v1,const WidgetVertexOut& v2, float w0,float w1,float w2,const glm::ivec2& screenCoord);
 typedef Pipeline<WidgetVertexIn,WidgetVertexOut,WidgetUniform,widgetVertexShader,widgetFragmentShader> WidgetPipeline;
 
 #endif // WIDGETPIPELINE_HPP

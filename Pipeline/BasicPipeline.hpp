@@ -4,8 +4,8 @@
 #include "../Texture.hpp"
 
 struct BasicUniform {
-	Texture* framebuffer;
 	AlphaBlending blendingMode;
+	glm::ivec2 viewport;
 };
 struct BasicVertexIn {
 	glm::vec3 COORDS;
@@ -28,7 +28,7 @@ struct BasicVertexOut {
 	}
 };
 BasicVertexOut basicVertexShader(const BasicUniform& uniform, const BasicVertexIn& input);
-void basicFragmentShader(const BasicUniform& uniform, const BasicVertexOut& v0,const BasicVertexOut& v1,const BasicVertexOut& v2, float w0,float w1,float w2,const glm::ivec2& screenCoord);
+void basicFragmentShader(Framebuffer& framebuffer,const BasicUniform& uniform, const BasicVertexOut& v0,const BasicVertexOut& v1,const BasicVertexOut& v2, float w0,float w1,float w2,const glm::ivec2& screenCoord);
 typedef Pipeline<BasicVertexIn,BasicVertexOut,BasicUniform,basicVertexShader,basicFragmentShader> BasicPipeline;
 
 

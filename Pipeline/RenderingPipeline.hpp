@@ -4,6 +4,7 @@
 #include <glm/glm.hpp>
 #include "TriangleSort.hpp"
 #include <algorithm>
+#include "../Framebuffer.hpp"
 
 template <typename VertexInput,
 		  typename VertexOutput,
@@ -11,8 +12,8 @@ template <typename VertexInput,
 		  auto VertexShader,
 		  auto FragmentShader> struct Pipeline {
 	//typedef std::function<VertexOutput(const Uniform&, const VertexInput&)> VertexShader;
-	//typedef std::function<void(const Uniform&, const VertexOutput&,const VertexOutput&,const VertexOutput&,float,float,float,const glm::ivec2&)> FragmentShader;
-	static void resolveScanline(const Uniform& uniform, const glm::ivec2& viewport, int scanline, int minX, int maxX, float rArea,
+	//typedef std::function<void(Framebuffer&, const Uniform&, const VertexOutput&,const VertexOutput&,const VertexOutput&,float,float,float,const glm::ivec2&)> FragmentShader;
+	static void resolveScanline(Framebuffer& framebuffer, const Uniform& uniform, const glm::ivec2& viewport, int scanline, int minX, int maxX, float rArea,
 								const VertexOutput& v0, const VertexOutput& v1, const VertexOutput& v2) {
 		const int max_x = std::min(maxX,viewport.x);
 		for(int x = std::max(minX,0); x < max_x; ++x) {
@@ -21,10 +22,10 @@ template <typename VertexInput,
 			const float w0 = float(Fixed::edgeFunction(v1.COORDS, v2.COORDS, pf)) * rArea;
 			const float w1 = float(Fixed::edgeFunction(v2.COORDS, v0.COORDS, pf)) * rArea;
 			const float w2 = float(Fixed::edgeFunction(v0.COORDS, v1.COORDS, pf)) * rArea;
-			FragmentShader(uniform,v0,v1,v2,w0,w1,w2,p);
+			FragmentShader(framebuffer,uniform,v0,v1,v2,w0,w1,w2,p);
 		}
 	}
-	static void fillBottomFlatTriangle(const Uniform& uniform, const glm::ivec2& viewport, float rArea, const VertexOutput& v0, const VertexOutput& v1, const VertexOutput& v2) {
+	static void fillBottomFlatTriangle(Framebuffer& framebuffer, const Uniform& uniform, const glm::ivec2& viewport, float rArea, const VertexOutput& v0, const VertexOutput& v1, const VertexOutput& v2) {
 		const float invslope1 = float(v1.COORDS.x - v0.COORDS.x) / float(v1.COORDS.y - v0.COORDS.y);
 		const float invslope2 = float(v2.COORDS.x - v0.COORDS.x) / float(v2.COORDS.y - v0.COORDS.y);
 		const int minY = std::clamp(int(std::trunc(v0.COORDS.y)),0,viewport.y);
@@ -33,10 +34,10 @@ template <typename VertexInput,
 			const float dy = float(i) - v0.COORDS.y + 0.5f;
 			const float curx1 = v0.COORDS.x + (invslope1 * dy) +0.5f;
 			const float curx2 = v0.COORDS.x + (invslope2 * dy) + 0.5f;
-			resolveScanline(uniform,viewport,i,int(std::trunc(curx1)),int(std::trunc(curx2)),rArea,v0,v1,v2);
+			resolveScanline(framebuffer,uniform,viewport,i,int(std::trunc(curx1)),int(std::trunc(curx2)),rArea,v0,v1,v2);
 		}
 	}
-	static void fillTopFlatTriangle(const Uniform& uniform, const glm::ivec2& viewport, float rArea, const VertexOutput& v0, const VertexOutput& v1, const VertexOutput& v2) {
+	static void fillTopFlatTriangle(Framebuffer& framebuffer, const Uniform& uniform, const glm::ivec2& viewport, float rArea, const VertexOutput& v0, const VertexOutput& v1, const VertexOutput& v2) {
 		const float invslope1 = float(v2.COORDS.x - v0.COORDS.x) / float(v2.COORDS.y - v0.COORDS.y);
 		const float invslope2 = float(v2.COORDS.x - v1.COORDS.x) / float(v2.COORDS.y - v1.COORDS.y);
 		const int minY = std::clamp(int(std::trunc(v0.COORDS.y)),0,viewport.y);
@@ -45,10 +46,10 @@ template <typename VertexInput,
 			const float dy = float(i) - v2.COORDS.y;
 			const float curx1 = v2.COORDS.x + (invslope1 * dy);
 			const float curx2 = v2.COORDS.x + (invslope2 * dy);
-			resolveScanline(uniform,viewport,i,int(std::trunc(curx1)),int(std::trunc(curx2)),rArea,v0,v1,v2);
+			resolveScanline(framebuffer,uniform,viewport,i,int(std::trunc(curx1)),int(std::trunc(curx2)),rArea,v0,v1,v2);
 		}
 	}
-	static void renderVertexOutput(const Uniform& uniform, const glm::ivec2& viewport, const VertexOutput& v0, const VertexOutput& v1, const VertexOutput& v2) {
+	static void renderVertexOutput(Framebuffer& framebuffer, const Uniform& uniform, const glm::ivec2& viewport, const VertexOutput& v0, const VertexOutput& v1, const VertexOutput& v2) {
 		const VertexOutput *t = &v0;
 		const VertexOutput *m = &v1;
 		const VertexOutput *b = &v2;
@@ -64,7 +65,7 @@ template <typename VertexInput,
 			if (l->COORDS.x > r->COORDS.x) std::swap(l, r);
 			const float area = Generic::edgeFunction(*t,*r,*b);
 			const float rArea = 1.0f / area;
-			fillTopFlatTriangle(uniform, viewport, rArea, *l, *r, *b);
+			fillTopFlatTriangle(framebuffer,uniform, viewport, rArea, *l, *r, *b);
 		}
 		else if (m->COORDS.y == b->COORDS.y)
 		{
@@ -72,7 +73,7 @@ template <typename VertexInput,
 			if (l->COORDS.x > r->COORDS.x) std::swap(l, r);
 			const float area = Generic::edgeFunction(*t,*l,*r);
 			const float rArea = 1.0f / area;
-			fillBottomFlatTriangle(uniform, viewport, rArea, *t, *l, *r);
+			fillBottomFlatTriangle(framebuffer,uniform, viewport, rArea, *t, *l, *r);
 		}
 		else
 		  {
@@ -92,24 +93,24 @@ template <typename VertexInput,
 			const float area2 = Generic::edgeFunction(*l,*r,*b);
 			const float rArea1 = 1.0f / area1;
 			const float rArea2 = 1.0f / area2;
-			fillBottomFlatTriangle(uniform, viewport, rArea1, *t, *l, *r);
-			fillTopFlatTriangle(uniform, viewport, rArea2, *l, *r, *b);
+			fillBottomFlatTriangle(framebuffer,uniform, viewport, rArea1, *t, *l, *r);
+			fillTopFlatTriangle(framebuffer,uniform, viewport, rArea2, *l, *r, *b);
 		  }
 	}
-	static void renderTriangle(const glm::ivec2& viewport, const Uniform& uniform, const VertexInput& v0, const VertexInput& v1, const VertexInput& v2) {
+	static void renderTriangle(Framebuffer& framebuffer, const glm::ivec2& viewport, const Uniform& uniform, const VertexInput& v0, const VertexInput& v1, const VertexInput& v2) {
 		const VertexOutput o0 = VertexShader(uniform,v0);
 		const VertexOutput o1 = VertexShader(uniform,v1);
 		const VertexOutput o2 = VertexShader(uniform,v2);
-		renderVertexOutput(uniform,viewport,o0,o1,o2);
+		renderVertexOutput(framebuffer,uniform,viewport,o0,o1,o2);
 	}
-	static void renderTriangles(const glm::ivec2& viewport, const Uniform& uniform, const VertexInput* vertices, size_t vertexCount) {
+	static void renderTriangles(Framebuffer& framebuffer, const glm::ivec2& viewport, const Uniform& uniform, const VertexInput* vertices, size_t vertexCount) {
 		for(size_t i = 0; i < vertexCount; i += 3) {
-			renderTriangle(viewport,uniform,vertices[i],vertices[i+1],vertices[i+2]);
+			renderTriangle(framebuffer,viewport,uniform,vertices[i],vertices[i+1],vertices[i+2]);
 		}
 	}
-	static void renderTriangles(const glm::ivec2& viewport, const Uniform& uniform, const VertexInput* vertices, unsigned* indices, size_t indexCount) {
+	static void renderTriangles(Framebuffer& framebuffer, const glm::ivec2& viewport, const Uniform& uniform, const VertexInput* vertices, unsigned* indices, size_t indexCount) {
 		for(size_t i = 0; i < indexCount; i += 3) {
-			renderTriangle(viewport,uniform,vertices[indices[i]],vertices[indices[i+1]],vertices[indices[i+2]]);
+			renderTriangle(framebuffer,viewport,uniform,vertices[indices[i]],vertices[indices[i+1]],vertices[indices[i+2]]);
 		}
 	}
 };

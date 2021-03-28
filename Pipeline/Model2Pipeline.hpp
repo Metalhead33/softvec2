@@ -5,8 +5,6 @@
 #include "../ZBuffer.hpp"
 
 struct Model2Uniform {
-	Texture* framebuffer;
-	ZBuffer* zbuffer;
 	bool perspectiveCorrection;
 	Texture* tex;
 	TextureFiltering sampling;
@@ -33,6 +31,6 @@ struct Model2VertexOut {
 };
 
 Model2VertexOut model2VertexShader(const Model2Uniform& uniform, const Model2VertexIn& input);
-void model2FragmentShader(const Model2Uniform& uniform, const Model2VertexOut& v0,const Model2VertexOut& v1,const Model2VertexOut& v2, float w0,float w1,float w2,const glm::ivec2& screenCoord);
+void model2FragmentShader(Framebuffer& framebuffer,const Model2Uniform& uniform, const Model2VertexOut& v0,const Model2VertexOut& v1,const Model2VertexOut& v2, float w0,float w1,float w2,const glm::ivec2& screenCoord);
 typedef Pipeline<Model2VertexIn,Model2VertexOut,Model2Uniform,model2VertexShader,model2FragmentShader> Model2Pipeline;
 #endif // MODEL2PIPELINE_HPP

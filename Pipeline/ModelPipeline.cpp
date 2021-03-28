@@ -19,11 +19,11 @@ ModelVertexOut modelVertexShader(const ModelUniform &uniform, const ModelVertexI
 	return out;
 }
 
-void modelFragmentShader(const ModelUniform &uniform, const ModelVertexOut &v0, const ModelVertexOut &v1, const ModelVertexOut &v2, float w0, float w1, float w2, const glm::ivec2 &screenCoord)
+void modelFragmentShader(Framebuffer& framebuffer, const ModelUniform &uniform, const ModelVertexOut &v0, const ModelVertexOut &v1, const ModelVertexOut &v2, float w0, float w1, float w2, const glm::ivec2 &screenCoord)
 {
 	if(screenCoord.x < 0 || screenCoord.y < 0) return;
 	const float z =  ((w0 * v0.COORDS.z) + (w1 * v1.COORDS.z) + (w2 * v2.COORDS.z));
-	float& zbuffpoint = uniform.zbuffer->get(screenCoord.x,screenCoord.y);
+	float& zbuffpoint = framebuffer.getZbuffer()->get(screenCoord.x,screenCoord.y);
 	if(z >= 0.0f && z <= zbuffpoint) {
 	glm::vec2 texCoord = {
 					(w0 * v0.TEXCOORD.r) + (w1 * v1.TEXCOORD.r) + (w2 * v2.TEXCOORD.r),
@@ -31,6 +31,6 @@ void modelFragmentShader(const ModelUniform &uniform, const ModelVertexOut &v0, 
 					};
 	if(uniform.perspectiveCorrection) texCoord *= z;
 	glm::vec4 pixelOut = uniform.tex->sample(texCoord,screenCoord,uniform.sampling);
-	if ( uniform.framebuffer->setPixelWithBlending(screenCoord,pixelOut,uniform.blendingMode) ) zbuffpoint = z;
+	if ( framebuffer.getTexture()->setPixelWithBlending(screenCoord,pixelOut,uniform.blendingMode) ) zbuffpoint = z;
 	}
 }
