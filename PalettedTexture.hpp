@@ -2,7 +2,7 @@
 #define PALETTEDTEXTURE_HPP
 #include <glm/glm.hpp>
 #include "StandardPixelType.hpp"
-#include "PixelRgb565.hpp"
+#include "PixelRgb16bit.hpp"
 #include "Texture.hpp"
 #include <array>
 #include <cstring>
@@ -128,6 +128,11 @@ public:
 };
 
 // PixelRgb565
+typedef PalettedTexture<PixelRgb444> PalettedTextureRgb444;
+typedef PalettedTexture<PixelArgb4444> PalettedTextureArgb4444;
+typedef PalettedTexture<PixelRgba4444> PalettedTextureRgba4444;
+typedef PalettedTexture<PixelRgba5551> PalettedTextureRgba5551;
+typedef PalettedTexture<PixelArgb1555> PalettedTextureArgb1555;
 typedef PalettedTexture<PixelRgba5551> PalettedTextureRgb555;
 typedef PalettedTexture<PixelRgb565> PalettedTextureRgb565;
 // 8-bit Unsigned integer

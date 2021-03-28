@@ -18,5 +18,6 @@ enum Terrain {
 };
 
 extern std::array<sTexture,Terrain::TERRAIN_MAX> TerrainTextures;
+void initializeTerrainTextures();
 
 #endif // TERRAIN_HPP

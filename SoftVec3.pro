@@ -14,8 +14,8 @@ SOURCES += \
         Pipeline/ModelPipeline.cpp \
         Pipeline/TriangleSort.cpp \
         Pipeline/WidgetPipeline.cpp \
-        PixelRgb332.cpp \
-        PixelRgb565.cpp \
+        PixelRgb16bit.cpp \
+        PixelRgb8bit.cpp \
         Texture.cpp \
         Tile/Terrain.cpp \
         Tile/Tile.cpp \
@@ -26,6 +26,7 @@ HEADERS += \
 	Camera.hpp \
 	CreateTexture.hpp \
 	Dither.hpp \
+	Framebuffer.hpp \
 	PalettedTexture.hpp \
 	Pipeline/BasicPipeline.hpp \
 	Pipeline/ClipspacePipeline.hpp \
@@ -34,8 +35,9 @@ HEADERS += \
 	Pipeline/RenderingPipeline.hpp \
 	Pipeline/TriangleSort.hpp \
 	Pipeline/WidgetPipeline.hpp \
-	PixelRgb332.hpp \
-	PixelRgb565.hpp \
+	PixelRgb16bit.hpp \
+	PixelRgb8bit.hpp \
+	SdlFramebuffer.hpp \
 	StandardPixelType.hpp \
 	StandardTexture.hpp \
 	Texture.hpp \

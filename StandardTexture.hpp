@@ -3,8 +3,8 @@
 #include <glm/glm.hpp>
 #include "Texture.hpp"
 #include "StandardPixelType.hpp"
-#include "PixelRgb565.hpp"
-#include "PixelRgb332.hpp"
+#include "PixelRgb16bit.hpp"
+#include "PixelRgb8bit.hpp"
 #include <vector>
 #include <cstring>
 
@@ -91,7 +91,12 @@ public:
 };
 
 typedef StandardTexture<PixelRgb332> TextureRgb332;
+typedef StandardTexture<PixelRgb444> TextureRgb444;
+typedef StandardTexture<PixelArgb4444> TextureArgb4444;
+typedef StandardTexture<PixelRgba4444> TextureRgba4444;
 typedef StandardTexture<PixelRgba5551> TextureRgba5551;
+typedef StandardTexture<PixelArgb1555> TextureArgb1555;
+typedef StandardTexture<PixelRgb555> TextureRgb555;
 typedef StandardTexture<PixelRgb565> TextureRgb565;
 // 8-bit Unsigned integer
 typedef StandardTexture<PixelGreyscaleU8> TextureGreyscaleU8;
@@ -101,6 +106,10 @@ typedef StandardTexture<PixelArgbU8> TextureArgbU8;
 typedef StandardTexture<PixelBgrU8> TextureBgrU8;
 typedef StandardTexture<PixelBgraU8> TextureBgraU8;
 typedef StandardTexture<PixelAbgrU8> TextureAbgrU8;
+typedef StandardTexture<PixelRgbaU8> TextureRgbxU8;
+typedef StandardTexture<PixelXrgbU8> TextureXrgbU8;
+typedef StandardTexture<PixelBgrxU8> TextureBgrxU8;
+typedef StandardTexture<PixelXbgrU8> TextureXbgrU8;
 // 8-bit Signed integer
 typedef StandardTexture<PixelGreyscaleS8> TextureGreyscaleS8;
 typedef StandardTexture<PixelRgbS8> TextureRgbS8;

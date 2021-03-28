@@ -1,18 +1,18 @@
-#include "PixelRgb332.hpp"
+#include "PixelRgb8bit.hpp"
 
 static constexpr const float COEF3 = 0.0090909090909091f;
 float rg3[4][4] = {
-	{16.0f * COEF3, 4.0f * COEF3, 13.0f * COEF3, 1.0f * COEF3},
-	{8.0f * COEF3, 12.0f * COEF3, 5.0f * COEF3, 9.0f * COEF3},
-	{14.0f * COEF3, 2.0f * COEF3, 15.0f * COEF3, 3.0f * COEF3},
-	{6.0f * COEF3, 10.0f * COEF3, 7.0f * COEF3, 11.0f * COEF3}
+	{-16.0f * COEF3, 4.0f * COEF3, 13.0f * COEF3, -1.0f * COEF3},
+	{8.0f * COEF3, -12.0f * COEF3, -5.0f * COEF3, 9.0f * COEF3},
+	{-14.0f * COEF3, 2.0f * COEF3, 15.0f * COEF3, -3.0f * COEF3},
+	{6.0f * COEF3, -10.0f * COEF3, -7.0f * COEF3, 11.0f * COEF3}
 };
 static constexpr const float COEF2 = 0.02f;
 float b2[4][4] = {
-	{16.0f * COEF2, 4.0f * COEF2, 13.0f * COEF2, 1.0f * COEF2},
-	{8.0f * COEF2, 12.0f * COEF2, 5.0f * COEF2, 9.0f * COEF2},
-	{14.0f * COEF2, 2.0f * COEF2, 15.0f * COEF2, 3.0f * COEF2},
-	{6.0f * COEF2, 10.0f * COEF2, 7.0f * COEF2, 11.0f * COEF2}
+	{16.0f * COEF2, -4.0f * COEF2, -13.0f * COEF2, 1.0f * COEF2},
+	{-8.0f * COEF2, 12.0f * COEF2, 5.0f * COEF2, -9.0f * COEF2},
+	{14.0f * COEF2, -2.0f * COEF2, -15.0f * COEF2, 3.0f * COEF2},
+	{-6.0f * COEF2, 10.0f * COEF2, 7.0f * COEF2, -11.0f * COEF2}
 };
 
 static float dither3(float val, const glm::ivec2 &coords, float ditherAmount = 0.5f) {

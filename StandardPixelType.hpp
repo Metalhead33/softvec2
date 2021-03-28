@@ -195,6 +195,114 @@ template <typename Precision> struct PixelABGR {
 		col.r = MH33::Util::fnormalize(r);
 	}
 };
+template <typename Precision> struct PixelRGBX {
+	Precision r,g,b,x;
+	void fromVec4(const glm::vec4& col) {
+		r = MH33::Util::fdenormalize<Precision>(col.r);
+		g = MH33::Util::fdenormalize<Precision>(col.g);
+		b = MH33::Util::fdenormalize<Precision>(col.b);
+	}
+	typedef OrderedDither<Precision> Dither;
+	void fromVec4Dithered(const glm::vec4& col, const glm::ivec2& coords, float ditherAmount = 0.5f) {
+		if constexpr(std::numeric_limits<Precision>::is_integer ) {
+			fromVec4(glm::vec4(
+							Dither::ditherDown(col.r,coords,ditherAmount),
+							Dither::ditherDown(col.g,coords,ditherAmount),
+							Dither::ditherDown(col.b,coords,ditherAmount),
+							col.a
+					));
+		} else {
+			fromVec4(col);
+		}
+	}
+	void toVec4(glm::vec4& col) const {
+		col.r = MH33::Util::fnormalize(r);
+		col.g = MH33::Util::fnormalize(g);
+		col.b = MH33::Util::fnormalize(b);
+		col.a = 1.0f;
+	}
+};
+template <typename Precision> struct PixelXRGB {
+	Precision a,r,g,b;
+	void fromVec4(const glm::vec4& col) {
+		r = MH33::Util::fdenormalize<Precision>(col.r);
+		g = MH33::Util::fdenormalize<Precision>(col.g);
+		b = MH33::Util::fdenormalize<Precision>(col.b);
+	}
+	typedef OrderedDither<Precision> Dither;
+	void fromVec4Dithered(const glm::vec4& col, const glm::ivec2& coords, float ditherAmount = 0.5f) {
+		if constexpr(std::numeric_limits<Precision>::is_integer) {
+			fromVec4(glm::vec4(
+							Dither::ditherDown(col.r,coords,ditherAmount),
+							Dither::ditherDown(col.g,coords,ditherAmount),
+							Dither::ditherDown(col.b,coords,ditherAmount),
+							col.a
+					));
+		} else {
+			fromVec4(col);
+		}
+	}
+	void toVec4(glm::vec4& col) const {
+		col.a = 1.0f;
+		col.r = MH33::Util::fnormalize(r);
+		col.g = MH33::Util::fnormalize(g);
+		col.b = MH33::Util::fnormalize(b);
+	}
+};
+template <typename Precision> struct PixelBGRX {
+	Precision r,g,b,a;
+	void fromVec4(const glm::vec4& col) {
+		b = MH33::Util::fdenormalize<Precision>(col.b);
+		g = MH33::Util::fdenormalize<Precision>(col.g);
+		r = MH33::Util::fdenormalize<Precision>(col.r);
+	}
+	typedef OrderedDither<Precision> Dither;
+	void fromVec4Dithered(const glm::vec4& col, const glm::ivec2& coords, float ditherAmount = 0.5f) {
+		if constexpr(std::numeric_limits<Precision>::is_integer) {
+			fromVec4(glm::vec4(
+							Dither::ditherDown(col.r,coords,ditherAmount),
+							Dither::ditherDown(col.g,coords,ditherAmount),
+							Dither::ditherDown(col.b,coords,ditherAmount),
+							col.a
+					));
+		} else {
+			fromVec4(col);
+		}
+	}
+	void toVec4(glm::vec4& col) const {
+		col.b = MH33::Util::fnormalize(b);
+		col.g = MH33::Util::fnormalize(g);
+		col.r = MH33::Util::fnormalize(r);
+		col.a = 1.0f;
+	}
+};
+template <typename Precision> struct PixelXBGR {
+	Precision a,r,g,b;
+	void fromVec4(const glm::vec4& col) {
+		b = MH33::Util::fdenormalize<Precision>(col.b);
+		g = MH33::Util::fdenormalize<Precision>(col.g);
+		r = MH33::Util::fdenormalize<Precision>(col.r);
+	}
+	typedef OrderedDither<Precision> Dither;
+	void fromVec4Dithered(const glm::vec4& col, const glm::ivec2& coords, float ditherAmount = 0.5f) {
+		if constexpr(std::numeric_limits<Precision>::is_integer) {
+			fromVec4(glm::vec4(
+							Dither::ditherDown(col.r,coords,ditherAmount),
+							Dither::ditherDown(col.g,coords,ditherAmount),
+							Dither::ditherDown(col.b,coords,ditherAmount),
+							col.a
+					));
+		} else {
+			fromVec4(col);
+		}
+	}
+	void toVec4(glm::vec4& col) const {
+		col.a = 1.0f;
+		col.b = MH33::Util::fnormalize(b);
+		col.g = MH33::Util::fnormalize(g);
+		col.r = MH33::Util::fnormalize(r);
+	}
+};
 
 // 8-bit Unsigned integer
 typedef PixelGreyscale<uint8_t> PixelGreyscaleU8;
@@ -204,6 +312,10 @@ typedef PixelARGB<uint8_t> PixelArgbU8;
 typedef PixelBGR<uint8_t> PixelBgrU8;
 typedef PixelBGRA<uint8_t> PixelBgraU8;
 typedef PixelABGR<uint8_t> PixelAbgrU8;
+typedef PixelRGBX<uint8_t> PixelRgbxU8;
+typedef PixelXRGB<uint8_t> PixelXrgbU8;
+typedef PixelBGRX<uint8_t> PixelBgrxU8;
+typedef PixelXBGR<uint8_t> PixelXbgrU8;
 // 8-bit Signed integer
 typedef PixelGreyscale<int8_t> PixelGreyscaleS8;
 typedef PixelRGB<int8_t> PixelRgbS8;
@@ -212,6 +324,10 @@ typedef PixelARGB<int8_t> PixelArgbS8;
 typedef PixelBGR<int8_t> PixelBgrS8;
 typedef PixelBGRA<int8_t> PixelBgraS8;
 typedef PixelABGR<int8_t> PixelAbgrS8;
+typedef PixelRGBX<int8_t> PixelRgbxS8;
+typedef PixelXRGB<int8_t> PixelXrgbS8;
+typedef PixelBGRX<int8_t> PixelBgrxS8;
+typedef PixelXBGR<int8_t> PixelXbgrS8;
 // 16-bit Unsigned integer
 typedef PixelGreyscale<uint16_t> PixelGreyscaleU16;
 typedef PixelRGB<uint16_t> PixelRgbU16;
