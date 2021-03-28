@@ -52,22 +52,18 @@ std::vector<unsigned> indices = {
 
 void rennderTileGrid(FrameBuff& framebuffer, const Grid& grid, const glm::ivec2& hexagonSize, const glm::ivec2& gridOffset, const glm::ivec2& framebufferOffset, int rows, int columns)  {
 	WidgetUniform uniform = { nullptr, TextureFiltering::NEAREST_NEIGHBOUR, AlphaBlending::DITHERED, hexagonSize, glm::ivec2(0,0) };
+	rows = std::min(rows,int(grid.h)-gridOffset.y);
+	columns = std::min(columns,int(grid.w)-gridOffset.x);
 	const int xoff1 = hexagonSize.x / 2;
 	const int yoff2 = int(float(hexagonSize.y) * 0.75f);
 	uniform.offset.y = framebufferOffset.y;
-	for(int row = 0; row < rows; ++row) {
-		uniform.offset.x = (row&1) ? framebufferOffset.x - xoff1 :framebufferOffset.x;
-		const int gridRow = gridOffset.y + row;
-		if(gridRow < grid.h) {
-			for(int column = 0; column < columns; ++column) {
-				const int gridColumn = gridOffset.x + column;
-				if(gridColumn < grid.w) {
-					uniform.tex = TerrainTextures[grid[glm::ivec2(gridRow, gridColumn)].terrainType].get();
-					WidgetPipeline::renderTriangles(framebuffer,viewport,uniform,vertices.data(),indices.data(),indices.size() );
-					uniform.offset.x += hexagonSize.x;
-				} else break;
+	for(int row = gridOffset.y; row < rows; ++row) {
+		uniform.offset.x = (row&1) ? framebufferOffset.x - xoff1 : framebufferOffset.x;
+			for(int column = gridOffset.x; column < columns; ++column) {
+				uniform.tex = TerrainTextures[grid[glm::ivec2(row, column)].terrainType].get();
+				WidgetPipeline::renderTriangles(framebuffer,viewport,uniform,vertices.data(),indices.data(),indices.size() );
+				uniform.offset.x += hexagonSize.x;
 			}
-		} else break;
 		uniform.offset.y += yoff2;
 	}
 }
@@ -78,13 +74,21 @@ int main()
 	sSdlWindow window = sSdlWindow(SDL_CreateWindow("Chip8",SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, W,H, 0),SDL_DestroyWindow);
 	FrameBuff framebuffer(window,-1,0,W,H);
 	initializeTerrainTextures();
-	Grid grid(30,30);
+	Grid grid(120,120);
 	for(int i = 10; i < 20; ++i) {
 		for(int j = 10; j < 20; ++j) {
 			grid[glm::ivec2(i,j)].terrainType = Terrain::SWAMP;
 		}
 	}
 	grid[glm::ivec2(5,5)].terrainType = Terrain::ICE;
+
+	const unsigned hexagonDim = 32;
+	const int hexagonDimMin = int(hexagonDim) * -1;
+
+	glm::ivec2 offset(0,0);
+	glm::ivec2 fieldSize((W/hexagonDim)+(2*hexagonDim),
+						 (H/hexagonDim)+(2*hexagonDim));
+
 	bool isInterrupted=false;
 	SDL_WarpMouseInWindow(NULL,CX,CY);
 	do {
@@ -92,12 +96,46 @@ int main()
 		while(SDL_PollEvent(&ev)) {
 			switch(ev.type) {
 			case SDL_QUIT: isInterrupted = true; break;
+			case SDL_KEYDOWN:
+			{
+				switch(ev.key.keysym.sym)
+				{
+				case SDLK_ESCAPE:
+					isInterrupted = true; break;
+					break;
+				case SDLK_w:
+					offset.y -= 3;
+					offset.y = std::clamp(offset.y,0,int(grid.h*hexagonDim));
+					break;
+				case SDLK_s:
+					offset.y += 3;
+					offset.y = std::clamp(offset.y,0,int(grid.h*hexagonDim));
+					break;
+				case SDLK_a:
+					offset.x -= 3;
+					offset.x = std::clamp(offset.x,0,int(grid.w*hexagonDim));
+					break;
+				case SDLK_d:
+					offset.x += 3;
+					offset.x = std::clamp(offset.x,0,int(grid.w*hexagonDim));
+					break;
+				case SDLK_SPACE:
+					std::cout << "Offset: { " << offset.x << " " << offset.y << "} " << std::endl; break;
+				default: break;
+				}
+				break;
+			}
 			default: break;
 			}
 		}
 		framebuffer.getTexture()->clearToColour(glm::vec4(0.0f,0.0f,0.0f,1.0f));
 		// Draw a triangle
-		rennderTileGrid(framebuffer, grid, glm::ivec2(32,32),glm::ivec2(0,0),glm::ivec2(-64,-64),30,30);
+		rennderTileGrid(framebuffer, grid, glm::ivec2(hexagonDim,hexagonDim),glm::ivec2(offset.x/hexagonDim,offset.y/hexagonDim),
+						glm::ivec2( ((offset.x%hexagonDim)*-1) + hexagonDimMin, ((offset.y%hexagonDim)*-1) + hexagonDimMin),
+						fieldSize.y,fieldSize.x);
+		/*rennderTileGrid(framebuffer, grid, glm::ivec2(hexagonDim,hexagonDim),glm::ivec2(offset.x/hexagonDim,offset.y/hexagonDim),
+						glm::ivec2((offset.x%hexagonDimMin),(offset.y%hexagonDimMin)),
+						fieldSize.y,fieldSize.x);*/
 		framebuffer.swapBuffers();
 		SDL_Delay(1000/60);
 	} while(!isInterrupted);

@@ -60,4 +60,10 @@ public:
 	}
 };
 
+typedef SdlFramebuffer<PixelRgb332,SDL_PIXELFORMAT_RGB332> SdlFramebufferRGB332;
+typedef SdlFramebuffer<PixelRgb444,SDL_PIXELFORMAT_RGB444> SdlFramebufferRGB444;
+typedef SdlFramebuffer<PixelRgb555,SDL_PIXELFORMAT_RGB555> SdlFramebufferRGB555;
+typedef SdlFramebuffer<PixelRgb565,SDL_PIXELFORMAT_RGB565> SdlFramebufferRGB565;
+typedef SdlFramebuffer<PixelXrgbU8,SDL_PIXELFORMAT_BGRX8888> SdlFramebufferRGB8888;
+
 #endif // SDLFRAMEBUFFER_HPP
